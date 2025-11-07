@@ -477,13 +477,13 @@
         // }
 
         // 立即触发网易云音乐播放器播放
-        const neteasePlayer = document.getElementById("neteasePlayer");
-        if (neteasePlayer) {
-          // 通过重新加载iframe来触发auto播放
-          const currentSrc = neteasePlayer.src;
-          const baseSrc = currentSrc.split('&trigger=')[0]; // 移除之前的trigger参数
-          neteasePlayer.src = baseSrc + '&trigger=' + Date.now();
-        }
+        // const neteasePlayer = document.getElementById("neteasePlayer");
+        // if (neteasePlayer) {
+        //   // 通过重新加载iframe来触发auto播放
+        //   const currentSrc = neteasePlayer.src;
+        //   const baseSrc = currentSrc.split('&trigger=')[0]; // 移除之前的trigger参数
+        //   neteasePlayer.src = baseSrc + '&trigger=' + Date.now();
+        // }
       };
 
       const scheduleFrame = (callback, delay = 0) => {
