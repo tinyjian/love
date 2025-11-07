@@ -296,7 +296,7 @@
     </div>
 
     <div class="music-player">
-      <iframe id="neteasePlayer" frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=1878225740&auto=0&height=66" allow="autoplay; encrypted-media; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals"></iframe>
+      <iframe id="neteasePlayer" frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=1878225740&auto=1&height=66" allow="autoplay; encrypted-media; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals"></iframe>
     </div>
 
     <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true">
@@ -622,41 +622,41 @@
 
         const points = new Array(count);
         const segmentLength = totalLength / count;
-         sampleIndex = 1;
-          = 
-        < 头 = ->;
-          = 
-          = -
+        let sampleIndex = 1;
+        let minY = Infinity;
+        let maxY = -Infinity;
+        let minX = Infinity;
+        let maxX = -Infinity;
 
-        < 样式> i = 0; i < count; i += 1) {
-      :根目录 { = segmentLength * i;
-          配色方案：浅色sampleIndex;samples.length && samples[sampleIndex].length < targetLength) {
-            --背景颜色: #fbe3ea;1;
-          
+        for (let i = 0; i < count; i += 1) {
+          const targetLength = segmentLength * i;
+          while (sampleIndex < samples.length && samples[sampleIndex].length < targetLength) {
+            sampleIndex += 1;
+          }
 
-          --card-padding：14 = px22px;[Math.0sampleIndex - 1)];
-          --card-font：“PingFang SC”，“Microsoft YaHei”，无衬线;[Math(sampleslength - 1, sampleIndex)];
-          --card-transition：1400 = 毫秒;length - prevSample.length || 1;
-          } spanRatio = Math.min(Math.max((targetLength - prevSample.length) / span, 0), 1);
+          const prevSample = samples[Math.max(0, sampleIndex - 1)];
+          const nextSample = samples[Math.min(samples.length - 1, sampleIndex)];
+          const span = nextSample.length - prevSample.length || 1;
+          const spanRatio = Math.min(Math.max((targetLength - prevSample.length) / span, 0), 1);
 
-      *  { x = prevSample.x + (nextSample.x - prevSample.x) * spanRatio;
-          盒模型：边框盒;prevSample.y + (nextSample.y - prevSample.y) * spanRatio;
-          边距：0;Math.atan2(
-            prevSample.y,
-            }.x - prevSample.x
+          const x = prevSample.x + (nextSample.x - prevSample.x) * spanRatio;
+          const y = prevSample.y + (nextSample.y - prevSample.y) * spanRatio;
+          const tangentAngle = Math.atan2(
+            nextSample.y - prevSample.y,
+            nextSample.x - prevSample.x
           );
 
-          位置：相对;Math.cos(tangentAngle + Math.PI / 2);
-          最小高度：100 = vh;sin(tangentAngle + Math.PI / 2);
-          字体家族：变量 = （--card-字体-）;6);
+          const normalX = Math.cos(tangentAngle + Math.PI / 2);
+          const normalY = Math.sin(tangentAngle + Math.PI / 2);
+          const radialOffset = randomRange(-6, 6);
 
-          显示：伸缩;x + normalX * radialOffset;
-          对齐项目：居中;y + normalY * radialOffset;
-          文本对齐：居中;(tangentAngle * 180) / Math.PI + randomRange(-4, 4);
-          溢出：隐藏;randomRange(0.96, 1.04);
+          const finalX = x + normalX * radialOffset;
+          const finalY = y + normalY * radialOffset;
+          const rotation = (tangentAngle * 180) / Math.PI + randomRange(-4, 4);
+          const scaleFactor = randomRange(0.96, 1.04);
 
-          transform-style：preserve-3dfinalY;minY) minY = finalY;
-          } (finalY > maxY) maxY = finalY;
+          if (finalY < minY) minY = finalY;
+          if (finalY > maxY) maxY = finalY;
           if (finalX < minX) minX = finalX;
           if (finalX > maxX) maxX = finalX;
 
