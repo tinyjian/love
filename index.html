@@ -468,12 +468,13 @@
       };
 
       const startBgm = () => {
-        if (!bgm) return;
-        bgm.volume = 0.6;
-        const playPromise = bgm.play();
-        if (playPromise && typeof playPromise.catch === "function") {
-          playPromise.catch(() => {});
-        }
+        // 注释掉背景音乐播放
+        // if (!bgm) return;
+        // bgm.volume = 0.6;
+        // const playPromise = bgm.play();
+        // if (playPromise && typeof playPromise.catch === "function") {
+        //   playPromise.catch(() => {});
+        // }
 
         // 立即触发网易云音乐播放器播放
         const neteasePlayer = document.getElementById("neteasePlayer");
