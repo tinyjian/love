@@ -252,32 +252,16 @@
         }
       }
 
-      .music-player {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(255, 120, 164, 0.2);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 164, 194, 0.3);
-        overflow: hidden;
-      }
-
-      .music-player iframe {
-        display: block;
-        border: none;
-      }
-
       @media (max-width: 768px) {
-        .music-player {
-          bottom: 10px;
-          right: 10px;
-          transform: scale(0.85);
-          transform-origin: bottom right;
+        .card {
+          min-width: 150px;
+          max-width: 210px;
+          font-size: 17px;
+        }
+
+        .card::before {
+          font-size: 11px;
+          padding: 3px 8px;
         }
       }
     </style>
@@ -293,10 +277,6 @@
     ></audio>
     <div class="experience">
       <div id="cards" class="cards"></div>
-    </div>
-
-    <div class="music-player">
-      <iframe id="neteasePlayer" frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=1878225740&auto=1&height=66" allow="autoplay; encrypted-media; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals"></iframe>
     </div>
 
     <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true">
@@ -474,8 +454,6 @@
         if (playPromise && typeof playPromise.catch === "function") {
           playPromise.catch(() => {});
         }
-
-        // 网易云音乐播放器设置为auto=1，会自动播放
       };
 
       const scheduleFrame = (callback, delay = 0) => {
