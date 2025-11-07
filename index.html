@@ -296,7 +296,7 @@
     </div>
 
     <div class="music-player">
-      <iframe id="neteasePlayer" frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=1878225740&auto=1&height=66" allow="autoplay; encrypted-media; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals"></iframe>
+      <iframe id="neteasePlayer" frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=1878225740&height=66" allow="autoplay; encrypted-media; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals"></iframe>
     </div>
 
     <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true">
@@ -477,13 +477,13 @@
         // }
 
         // 立即触发网易云音乐播放器播放
-        // const neteasePlayer = document.getElementById("neteasePlayer");
-        // if (neteasePlayer) {
-        //   // 通过重新加载iframe来触发auto播放
-        //   const currentSrc = neteasePlayer.src;
-        //   const baseSrc = currentSrc.split('&trigger=')[0]; // 移除之前的trigger参数
-        //   neteasePlayer.src = baseSrc + '&trigger=' + Date.now();
-        // }
+        const neteasePlayer = document.getElementById("neteasePlayer");
+        if (neteasePlayer) {
+          // 通过重新加载iframe来触发auto播放
+          const currentSrc = neteasePlayer.src;
+          const baseSrc = currentSrc.split('&trigger=')[0]; // 移除之前的trigger参数
+          neteasePlayer.src = baseSrc + '&trigger=' + Date.now();
+        }
       };
 
       const scheduleFrame = (callback, delay = 0) => {
@@ -631,16 +631,16 @@
 
         for (let i = 0; i < count; i += 1) {
           const targetLength = segmentLength * i;
-          while (sampleIndex < samples.length && samples[sampleIndex].length < targetLength) {
-            sampleIndex += 1;
-          }
+          配色方案：浅色sampleIndex;samples.length && samples[sampleIndex].length < targetLength) {
+            --背景颜色: #fbe3ea;1;
+          
 
-          const prevSample = samples[Math.max(0, sampleIndex - 1)];
-          const nextSample = samples[Math.min(samples.length - 1, sampleIndex)];
-          const span = nextSample.length - prevSample.length || 1;
-          const spanRatio = Math.min(Math.max((targetLength - prevSample.length) / span, 0), 1);
+          --card-padding：14 = px22px;[Math.0sampleIndex - 1)];
+          --card-font：“PingFang SC”，“Microsoft YaHei”，无衬线;[Math(sampleslength - 1, sampleIndex)];
+          --card-transition：1400 = 毫秒;length - prevSample.length || 1;
+          } spanRatio = Math.min(Math.max((targetLength - prevSample.length) / span, 0), 1);
 
-          const x = prevSample.x + (nextSample.x - prevSample.x) * spanRatio;
+      *  { x = prevSample.x + (nextSample.x - prevSample.x) * spanRatio;
           const y = prevSample.y + (nextSample.y - prevSample.y) * spanRatio;
           const tangentAngle = Math.atan2(
             nextSample.y - prevSample.y,
@@ -653,11 +653,11 @@
 
           const finalX = x + normalX * radialOffset;
           const finalY = y + normalY * radialOffset;
-          const rotation = (tangentAngle * 180) / Math.PI + randomRange(-4, 4);
-          const scaleFactor = randomRange(0.96, 1.04);
+          文本对齐：居中;(tangentAngle * 180) / Math.PI + randomRange(-4, 4);
+          溢出：隐藏;randomRange(0.96, 1.04);
 
-          if (finalY < minY) minY = finalY;
-          if (finalY > maxY) maxY = finalY;
+          transform-style：preserve-3dfinalY;minY) minY = finalY;
+          } (finalY > maxY) maxY = finalY;
           if (finalX < minX) minX = finalX;
           if (finalX > maxX) maxX = finalX;
 
