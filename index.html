@@ -2,17 +2,25 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#ff8fab" />
+    <meta name="description" content="给怡宝的一份爱心礼物" />
+    <meta property="og:title" content="给怡宝的秘密礼物" />
+    <meta property="og:description" content="我为你准备了一份爱心礼物" />
+    <meta property="og:type" content="website" />
     <title>爱心礼物</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💝%3C/text%3E%3C/svg%3E"
+    />
     <style>
       :root {
         color-scheme: light;
         --bg-color: #fbe3ea;
-        --card-shadow: 0 14px 32px rgba(255, 120, 164, 0.16);
-        --card-radius: 18px;
-        --card-padding: 14px 22px;
         --card-font: "PingFang SC", "Microsoft YaHei", sans-serif;
-        --card-transition: 1400ms;
+        --safe-right: max(16px, env(safe-area-inset-right));
+        --safe-bottom: max(16px, env(safe-area-inset-bottom));
+        --safe-top: max(18px, env(safe-area-inset-top));
       }
 
       * {
@@ -21,17 +29,19 @@
         padding: 0;
       }
 
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
       body {
         position: relative;
         min-height: 100vh;
+        min-height: 100dvh;
         font-family: var(--card-font);
-        background: linear-gradient(165deg, #ffeff3 0%, #ffd1e0 35%, #fbc2eb 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        perspective: 1800px;
-        transform-style: preserve-3d;
+        background-color: var(--bg-color);
+        background-image: linear-gradient(165deg, #ffeff3 0%, #ffd1e0 35%, #fbc2eb 100%);
       }
 
       body::before {
@@ -41,10 +51,8 @@
         background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.92), transparent 55%),
           radial-gradient(circle at 80% 30%, rgba(255, 179, 214, 0.55), transparent 60%),
           radial-gradient(circle at 50% 85%, rgba(255, 200, 223, 0.5), transparent 65%);
-        filter: saturate(125%);
         z-index: 0;
         pointer-events: none;
-        transform: translateZ(-240px) scale(1.2);
       }
 
       .floating-hearts {
@@ -56,102 +64,194 @@
 
       .heart {
         position: absolute;
+        bottom: -8%;
         color: #ff6b9c;
         font-size: 24px;
         opacity: 0;
-        animation: float 6.4s ease-in-out forwards;
+        animation: float var(--dur, 6.4s) ease-in-out var(--delay, 0s) infinite;
       }
 
       @keyframes float {
         0% {
           opacity: 0;
-          transform: translateY(60vh) scale(0.6) rotate(0deg);
+          transform: translate3d(0, 20vh, 0) scale(0.6) rotate(0deg);
         }
-        15% {
-          opacity: 0.85;
-        }
+        15%,
         80% {
           opacity: 0.85;
         }
         100% {
           opacity: 0;
-          transform: translateY(-80vh) scale(1.12) rotate(360deg);
+          transform: translate3d(0, -110vh, 0) scale(1.12) rotate(360deg);
         }
       }
 
       .experience {
         position: relative;
-        width: 100vw;
+        width: 100%;
         height: 100vh;
+        height: 100dvh;
         z-index: 2;
+      }
+
+      .stage-hint {
+        position: absolute;
+        top: var(--safe-top);
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 6;
+        width: min(520px, calc(100% - 32px));
+        text-align: center;
+        color: #c45d7a;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 480ms ease;
+      }
+
+      .stage-hint.is-visible {
+        opacity: 1;
+      }
+
+      .stage-hint strong {
+        display: block;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+      }
+
+      .stage-hint span {
+        display: block;
+        margin-top: 6px;
+        font-size: 13px;
+        opacity: 0.78;
       }
 
       .cards {
         position: absolute;
         inset: 0;
-        pointer-events: none;
         overflow: visible;
-        perspective: 1600px;
+        pointer-events: none;
       }
 
-      .card {
+      .popup {
         position: absolute;
-        left: 50%;
-        top: 50%;
-        min-width: 180px;
-        max-width: 240px;
-        padding: var(--card-padding);
-        border-radius: var(--card-radius);
-        box-shadow: var(--card-shadow);
-        background: linear-gradient(135deg, rgba(255, 228, 237, 0.94), rgba(255, 255, 255, 0.97));
-        border: 1px solid rgba(255, 164, 194, 0.35);
-        transform: translate3d(calc(-50% + var(--x, 0px)), calc(-50% + var(--y, 0px)), 0)
-          rotate(var(--rot, 0deg)) scale(var(--scale, 1));
+        left: 0;
+        top: 0;
+        width: 148px;
+        height: 64px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 164, 194, 0.45);
+        box-shadow: 0 6px 18px rgba(255, 105, 135, 0.28);
+        font-size: 12px;
+        line-height: 1.3;
+        user-select: none;
         transform-origin: center;
-        transition: transform var(--card-transition) cubic-bezier(0.22, 1, 0.36, 1),
-          opacity 420ms ease;
-        transition-delay: var(--delay, 0ms);
-        will-change: transform, opacity;
-        color: #7a3a52;
-        font-size: 20px;
-        letter-spacing: 1px;
-        text-align: center;
-        line-height: 1.4;
         opacity: 0;
-        contain: layout paint style;
-        backdrop-filter: blur(6px);
       }
 
-      .card::before {
-        content: "♥ 给怡宝的话";
-        display: inline-flex;
+      .popup-header {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 6px;
+        background: #fce4ec;
+        border-bottom: 1px solid #f8bbd0;
+        flex-shrink: 0;
+        font-size: 10px;
+        font-weight: 700;
+        color: #d4537a;
+        white-space: nowrap;
+      }
+
+      .popup-body {
+        flex: 1;
+        min-height: 0;
+        display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        font-size: 13px;
-        color: #ff6b9c;
-        margin-bottom: 6px;
-        position: absolute;
-        top: 12px;
-        left: 18px;
-        padding: 4px 10px;
-        border-radius: 999px;
-        background: rgba(255, 110, 158, 0.16);
-        font-weight: 500;
+        padding: 3px 6px;
+        text-align: center;
+        font-weight: 700;
+        color: #6d3348;
+        overflow: hidden;
       }
 
-      .card span {
-        display: block;
-        padding-top: 24px;
+      .popup-body span {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+        line-height: 1.25;
+        max-height: 2.5em;
       }
 
-      .card.is-visible {
-        opacity: 1;
+      .popup.theme-pink .popup-header {
+        background: #fce4ec;
+      }
+      .popup.theme-pink .popup-body {
+        background: #fff5f8;
+      }
+      .popup.theme-rose .popup-header {
+        background: #ffe4e8;
+      }
+      .popup.theme-rose .popup-body {
+        background: #fff7f8;
+      }
+      .popup.theme-lavender .popup-header {
+        background: #f3e5f5;
+      }
+      .popup.theme-lavender .popup-body {
+        background: #faf5fc;
+      }
+      .popup.theme-peach .popup-header {
+        background: #ffe8dc;
+      }
+      .popup.theme-peach .popup-body {
+        background: #fff8f3;
+      }
+      .popup.theme-coral .popup-header {
+        background: #ffddd8;
+      }
+      .popup.theme-coral .popup-body {
+        background: #fff6f5;
       }
 
-      .card.is-highlight {
-        box-shadow: 0 18px 48px rgba(255, 120, 176, 0.26);
-        background: linear-gradient(135deg, rgba(255, 210, 226, 0.97), rgba(255, 255, 255, 0.99));
+      @keyframes heart-fly-in {
+        0% {
+          opacity: 0;
+          left: var(--start-left);
+          top: var(--final-top);
+          transform: scale(0.35) rotate(var(--rotation, 0deg));
+        }
+        22% {
+          opacity: 1;
+          left: var(--final-left);
+          top: var(--final-top);
+          transform: scale(1.16) rotate(var(--rotation, 0deg));
+        }
+        72% {
+          opacity: 1;
+          left: var(--final-left);
+          top: var(--final-top);
+          transform: scale(1.16) rotate(var(--rotation, 0deg));
+        }
+        100% {
+          opacity: 1;
+          left: var(--final-left);
+          top: var(--final-top);
+          transform: scale(1) rotate(var(--rotation, 0deg));
+        }
+      }
+
+      .popup.heart-anim {
+        animation: heart-fly-in 3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
       }
 
       .modal-backdrop {
@@ -163,7 +263,13 @@
         justify-content: center;
         backdrop-filter: blur(6px);
         z-index: 10;
-        will-change: opacity;
+        opacity: 1;
+        transition: opacity 320ms ease;
+      }
+
+      .modal-backdrop.is-leaving {
+        opacity: 0;
+        pointer-events: none;
       }
 
       .modal {
@@ -175,8 +281,6 @@
         display: flex;
         flex-direction: column;
         gap: 16px;
-        will-change: transform, opacity;
-        transform: translateZ(0);
       }
 
       .modal-header {
@@ -215,16 +319,21 @@
         margin-top: 12px;
       }
 
+      .btn-primary,
+      .music-toggle {
+        border: none;
+        cursor: pointer;
+        color: #fff;
+        touch-action: manipulation;
+        background: linear-gradient(135deg, #ff6b9c, #ff8fab);
+      }
+
       .btn-primary {
         padding: 10px 22px;
         border-radius: 10px;
-        border: none;
-        background: linear-gradient(135deg, #ff6b9c, #ff8fab);
-        color: #fff;
         font-size: 16px;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
         font-weight: 500;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
       .btn-primary:hover {
@@ -236,61 +345,137 @@
         transform: translateY(1px);
       }
 
-      @supports not (backdrop-filter: blur(6px)) {
-        .card,
-        .modal-backdrop {
-          background: rgba(255, 255, 255, 0.92);
+      .btn-primary:focus-visible,
+      .music-toggle:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 3px;
+      }
+
+      .music-toggle {
+        position: fixed;
+        right: var(--safe-right);
+        bottom: var(--safe-bottom);
+        z-index: 20;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        font-size: 18px;
+        box-shadow: 0 10px 24px rgba(255, 110, 170, 0.28);
+      }
+
+      .music-toggle[hidden] {
+        display: none;
+      }
+
+      @media (max-width: 375px) {
+        .popup {
+          width: 102px;
+          height: 52px;
+        }
+        .popup-header {
+          font-size: 8px;
+          padding: 2px 4px;
+        }
+        .popup-body {
+          font-size: 10px;
+          padding: 2px 4px;
+        }
+      }
+
+      @media (min-width: 376px) and (max-width: 480px) {
+        .popup {
+          width: 118px;
+          height: 56px;
+        }
+        .popup-body {
+          font-size: 11px;
+        }
+      }
+
+      @media (min-width: 481px) and (max-width: 640px) {
+        .popup {
+          width: 132px;
+          height: 58px;
+        }
+        .popup-body {
+          font-size: 12px;
+        }
+      }
+
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .popup {
+          width: 158px;
+          height: 66px;
+        }
+        .popup-body {
+          font-size: 13px;
+        }
+      }
+
+      @media (min-width: 1025px) {
+        .popup {
+          width: 176px;
+          height: 70px;
+        }
+        .popup-header {
+          font-size: 11px;
+        }
+        .popup-body {
+          font-size: 14px;
         }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        * {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-          scroll-behavior: auto !important;
+        .heart {
+          animation: none;
+          display: none;
         }
-      }
-
-      @media (max-width: 768px) {
-        .card {
-          min-width: 150px;
-          max-width: 210px;
-          font-size: 17px;
-        }
-
-        .card::before {
-          font-size: 11px;
-          padding: 3px 8px;
+        .popup.heart-anim {
+          animation: none;
+          opacity: 1;
+          left: var(--final-left);
+          top: var(--final-top);
+          transform: rotate(var(--rotation, 0deg));
         }
       }
     </style>
   </head>
   <body>
     <div id="floatingHearts" class="floating-hearts"></div>
-    <audio
-      id="bgm"
-      src="./assets/love.mp3"
-      preload="auto"
-      loop
-      hidden
-    ></audio>
+    <audio id="bgm" src="./assets/love.mp3" preload="none" loop hidden></audio>
     <div class="experience">
+      <p id="stageHint" class="stage-hint" aria-live="polite">
+        <strong>这些话，都是给你的</strong>
+        <span id="stageHintText">一句一句飞过来，拼成一颗心</span>
+      </p>
       <div id="cards" class="cards"></div>
     </div>
 
-    <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div
+      id="modal"
+      class="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+      aria-describedby="modalBody"
+    >
       <div class="modal">
         <div class="modal-header">
           <div class="modal-icon">💝</div>
-          <div class="modal-title">给怡宝的秘密礼物</div>
+          <div class="modal-title" id="modalTitle">给怡宝的秘密礼物</div>
         </div>
-        <div class="modal-body">怡宝，我为你准备了一份爱心礼物。<br>准备好开启这份心意了吗？</div>
+        <div class="modal-body" id="modalBody">
+          怡宝，我为你准备了一份爱心礼物。<br />准备好开启这份心意了吗？
+        </div>
         <div class="modal-actions">
-          <button id="confirmBtn" class="btn-primary">开启惊喜</button>
+          <button id="confirmBtn" class="btn-primary" type="button">开启惊喜</button>
         </div>
       </div>
     </div>
+
+    <button id="musicToggle" class="music-toggle" type="button" hidden aria-pressed="false" aria-label="关闭音乐">
+      ♪
+    </button>
 
     <script>
       const phrases = [
@@ -388,216 +573,120 @@
         "怡宝，我想把世界与爱都给你",
         "怡宝，你是我永远的心动源泉",
         "怡宝，我愿意把所有好天气给你",
-        "怡宝，喜欢你是我最浪漫的决定"
+        "怡宝，喜欢你是我最浪漫的决定",
       ];
+
+      const TIMING = {
+        modalFade: 320,
+        spawnGap: 170,
+        flyDuration: 3000,
+        heartHold: 3500,
+        gatherGap: 6,
+        scatterGap: 8,
+      };
+
+      const THEMES = ["theme-pink", "theme-rose", "theme-lavender", "theme-peach", "theme-coral"];
 
       const modal = document.getElementById("modal");
       const confirmBtn = document.getElementById("confirmBtn");
       const cardsContainer = document.getElementById("cards");
       const floatingHearts = document.getElementById("floatingHearts");
       const bgm = document.getElementById("bgm");
+      const musicToggle = document.getElementById("musicToggle");
+      const stageHint = document.getElementById("stageHint");
+      const stageHintText = document.getElementById("stageHintText");
 
       const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       let prefersReducedMotion = motionQuery.matches;
-
+      const onMotionChange = (event) => {
+        prefersReducedMotion = event.matches;
+      };
       if (typeof motionQuery.addEventListener === "function") {
-        motionQuery.addEventListener("change", (event) => {
-          prefersReducedMotion = event.matches;
-        });
+        motionQuery.addEventListener("change", onMotionChange);
       } else if (typeof motionQuery.addListener === "function") {
-        motionQuery.addListener((event) => {
-          prefersReducedMotion = event.matches;
-        });
+        motionQuery.addListener(onMotionChange);
       }
 
       let hasStarted = false;
-      let floatingInterval = null;
-
-      const randomRange = (min, max) => Math.random() * (max - min) + min;
-
-      const setCardTransform = (card, { x, y, rotation, scale }) => {
-        card.style.setProperty("--x", `${x}px`);
-        card.style.setProperty("--y", `${y}px`);
-        card.style.setProperty("--rot", `${rotation}deg`);
-        card.style.setProperty("--scale", `${scale}`);
-      };
-
+      let musicEnabled = true;
+      let spawnTimer = null;
+      let spawnIndex = 0;
+      let selectedPhrases = [];
+      let heartPoints = [];
       const heartEmojis = ["💖", "💕", "💗", "💝", "💘"];
 
-      const spawnHeart = () => {
-        const heart = document.createElement("div");
-        heart.className = "heart";
-        heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
-        heart.style.left = `${Math.random() * 100}%`;
-        heart.style.animationDelay = `${Math.random() * 2}s`;
-        heart.style.animationDuration = `${5.5 + Math.random() * 2.5}s`;
-        heart.style.fontSize = `${20 + Math.random() * 18}px`;
-        floatingHearts.appendChild(heart);
-        setTimeout(() => heart.remove(), 7800);
+      const randomRange = (min, max) => Math.random() * (max - min) + min;
+      const pick = (list) => list[Math.floor(Math.random() * list.length)];
+      const loveScore = (str) => (str.includes("我爱你") ? 2 : str.includes("我喜欢你") ? 1 : 0);
+      const displayText = (text) => text.replace(/^怡宝，/, "");
+
+      const setHint = (text) => {
+        if (stageHintText) stageHintText.textContent = text;
+        if (stageHint) stageHint.classList.add("is-visible");
       };
 
-      const createFloatingHearts = () => {
-        for (let i = 0; i < 8; i += 1) {
-          setTimeout(spawnHeart, i * 480);
-        }
-        if (floatingInterval) clearInterval(floatingInterval);
-        floatingInterval = setInterval(() => {
-          if (!hasStarted) return;
-          spawnHeart();
-        }, 2600);
+      const getPopupSize = () => {
+        const w = window.innerWidth;
+        if (w <= 375) return { w: 102, h: 52 };
+        if (w <= 480) return { w: 118, h: 56 };
+        if (w <= 640) return { w: 132, h: 58 };
+        if (w <= 768) return { w: 148, h: 64 };
+        if (w <= 1024) return { w: 158, h: 66 };
+        return { w: 176, h: 70 };
       };
 
-      const startBgm = () => {
-        if (!bgm) return;
-        bgm.volume = 0.6;
-        const playPromise = bgm.play();
-        if (playPromise && typeof playPromise.catch === "function") {
-          playPromise.catch(() => {});
-        }
+      const getPhraseLimit = () => {
+        const minSide = Math.min(window.innerWidth, window.innerHeight);
+        if (minSide < 520) return 42;
+        if (minSide < 800) return 64;
+        return phrases.length;
       };
 
-      const scheduleFrame = (callback, delay = 0) => {
-        if (delay <= 0) {
-          requestAnimationFrame(callback);
-          return;
-        }
-
-        setTimeout(() => requestAnimationFrame(callback), delay);
+      const pickPhrases = (limit) => {
+        const scored = phrases.map((text) => ({
+          text,
+          score: loveScore(text),
+          rand: Math.random(),
+        }));
+        scored.sort((a, b) => b.score - a.score || a.rand - b.rand);
+        return scored.slice(0, limit).map((item) => item.text);
       };
 
-      confirmBtn.addEventListener("click", () => {
-        if (hasStarted) return;
-        hasStarted = true;
-        confirmBtn.disabled = true;
-        modal.style.opacity = "0";
-        modal.style.pointerEvents = "none";
-        scheduleFrame(() => modal.remove(), 320);
-        scheduleFrame(() => {
-          createCards();
-          createFloatingHearts();
-          startBgm();
-          if (prefersReducedMotion) return;
-          scheduleFrame(formHeart, 1200);
-          scheduleFrame(scatterCards, 11000);
-        }, 120);
-      });
-
-      function createCards() {
-        cardsContainer.innerHTML = "";
-        const fragment = document.createDocumentFragment();
-        const stackSpread = Math.min(window.innerWidth, window.innerHeight) * 0.18;
-        const baseDelay = 55;
-        const sortedPhrases = [...phrases].sort((a, b) => {
-          const loveScore = (str) => (str.includes("我爱你") ? 2 : str.includes("我喜欢你") ? 1 : 0);
-          const diff = loveScore(b) - loveScore(a);
-          return diff !== 0 ? diff : Math.random() - 0.5;
-        });
-
-        sortedPhrases.forEach((text, index) => {
-          const card = document.createElement("div");
-          card.className = "card";
-          const initialPoint = {
-            x: randomRange(-stackSpread / 2, stackSpread / 2),
-            y: randomRange(-stackSpread / 2, stackSpread / 2),
-            rotation: randomRange(-6, 6),
-            scale: randomRange(0.9, 1.02),
-          };
-          setCardTransform(card, initialPoint);
-          card.style.setProperty("--delay", `${index * baseDelay}ms`);
-          card.style.setProperty("--card-transition", "1400ms");
-          if (text.includes("我爱你") || text.includes("我喜欢你")) {
-            card.classList.add("is-highlight");
-          }
-          const span = document.createElement("span");
-          span.textContent = text;
-          card.appendChild(span);
-          fragment.appendChild(card);
-        });
-        cardsContainer.appendChild(fragment);
-        requestAnimationFrame(() => {
-          cardsContainer.querySelectorAll(".card").forEach((card) => {
-            card.classList.add("is-visible");
-          });
-        });
-      }
-
-      function formHeart() {
-        const cards = Array.from(cardsContainer.children);
-        const heartPoints = generateHeartPoints(cards.length);
-        cards.forEach((card, index) => {
-          const point = heartPoints[index];
-          card.style.setProperty("--card-transition", "1200ms");
-          scheduleFrame(() => setCardTransform(card, point), index * 45);
-        });
-      }
-
-      function scatterCards() {
-        const cards = Array.from(cardsContainer.children);
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        cards.forEach((card, index) => {
-          scheduleFrame(() => {
-            const randX = (Math.random() - 0.5) * width * 0.9;
-            const randY = (Math.random() - 0.5) * height * 0.9;
-            const randRot = randomRange(-18, 18);
-            const randScale = randomRange(0.9, 1.1);
-            card.style.setProperty("--card-transition", "1800ms");
-            setCardTransform(card, {
-              x: randX,
-              y: randY,
-              rotation: randRot,
-              scale: randScale,
-            });
-          }, index * 24);
-        });
-      }
-
-      function generateHeartPoints(count) {
-        const min = -Math.PI;
-        const max = Math.PI;
-        const sampleCount = Math.max(count * 8, 960);
-        const viewportMin = Math.min(window.innerWidth, window.innerHeight);
-        const baseScale = viewportMin * 0.032;
-        const verticalScale = baseScale * 1.06;
-        const samples = new Array(sampleCount);
-
-        let totalLength = 0;
-        let prevX = null;
-        let prevY = null;
-
-        for (let i = 0; i < sampleCount; i += 1) {
-          const ratio = i / (sampleCount - 1);
-          const t = min + (max - min) * ratio;
-          const rawX = 16 * Math.pow(Math.sin(t), 3);
-          const rawY =
+      const heartPointAt = (t) => {
+        const sinT = Math.sin(t);
+        return {
+          x: 16 * sinT * sinT * sinT,
+          y: -(
             13 * Math.cos(t) -
             5 * Math.cos(2 * t) -
             2 * Math.cos(3 * t) -
-            Math.cos(4 * t);
-          const x = rawX * baseScale;
-          const y = -rawY * verticalScale;
+            Math.cos(4 * t)
+          ),
+        };
+      };
 
-          if (prevX !== null) {
-            totalLength += Math.hypot(x - prevX, y - prevY);
-          }
+      const generateHeartPoints = (count) => {
+        const sampleCount = Math.max(count * 8, 720);
+        const samples = new Array(sampleCount);
+        let totalLength = 0;
+        let prev = null;
 
-          samples[i] = { x, y, length: totalLength };
-          prevX = x;
-          prevY = y;
+        for (let i = 0; i < sampleCount; i += 1) {
+          const t = (i / (sampleCount - 1)) * Math.PI * 2;
+          const point = heartPointAt(t);
+          if (prev) totalLength += Math.hypot(point.x - prev.x, point.y - prev.y);
+          samples[i] = { x: point.x, y: point.y, length: totalLength };
+          prev = point;
         }
 
         if (count <= 1) {
-          const { x, y } = samples[Math.floor(samples.length / 2)];
-          return [{ x, y, rotation: 0, scale: 1 }];
+          const mid = samples[Math.floor(samples.length / 2)];
+          return [{ x: mid.x, y: mid.y }];
         }
 
         const points = new Array(count);
         const segmentLength = totalLength / count;
         let sampleIndex = 1;
-        let minY = Infinity;
-        let maxY = -Infinity;
-        let minX = Infinity;
-        let maxX = -Infinity;
 
         for (let i = 0; i < count; i += 1) {
           const targetLength = segmentLength * i;
@@ -608,48 +697,217 @@
           const prevSample = samples[Math.max(0, sampleIndex - 1)];
           const nextSample = samples[Math.min(samples.length - 1, sampleIndex)];
           const span = nextSample.length - prevSample.length || 1;
-          const spanRatio = Math.min(Math.max((targetLength - prevSample.length) / span, 0), 1);
+          const ratio = Math.min(Math.max((targetLength - prevSample.length) / span, 0), 1);
 
-          const x = prevSample.x + (nextSample.x - prevSample.x) * spanRatio;
-          const y = prevSample.y + (nextSample.y - prevSample.y) * spanRatio;
-          const tangentAngle = Math.atan2(
-            nextSample.y - prevSample.y,
-            nextSample.x - prevSample.x
-          );
-
-          const normalX = Math.cos(tangentAngle + Math.PI / 2);
-          const normalY = Math.sin(tangentAngle + Math.PI / 2);
-          const radialOffset = randomRange(-6, 6);
-
-          const finalX = x + normalX * radialOffset;
-          const finalY = y + normalY * radialOffset;
-          const rotation = (tangentAngle * 180) / Math.PI + randomRange(-4, 4);
-          const scaleFactor = randomRange(0.96, 1.04);
-
-          if (finalY < minY) minY = finalY;
-          if (finalY > maxY) maxY = finalY;
-          if (finalX < minX) minX = finalX;
-          if (finalX > maxX) maxX = finalX;
-
-          points[i] = { x: finalX, y: finalY, rotation, scale: scaleFactor };
-        }
-
-        const width = Math.max(maxX - minX, 1);
-        const height = Math.max(maxY - minY, 1);
-        const safeWidth = window.innerWidth * 0.68;
-        const safeHeight = window.innerHeight * 0.64;
-        const fitScale = Math.min(safeWidth / width, safeHeight / height, 1);
-        const verticalOffset = (minY + maxY) / 2;
-        const horizontalOffset = (minX + maxX) / 2;
-        for (let i = 0; i < points.length; i += 1) {
-          points[i].x = (points[i].x - horizontalOffset) * fitScale;
-          points[i].y = (points[i].y - verticalOffset) * fitScale;
-          points[i].scale *= 0.96 + fitScale * 0.08;
+          points[i] = {
+            x: prevSample.x + (nextSample.x - prevSample.x) * ratio,
+            y: prevSample.y + (nextSample.y - prevSample.y) * ratio,
+          };
         }
 
         return points;
-      }
+      };
+
+      const getHeartLayout = (point) => {
+        const size = getPopupSize();
+        const { innerWidth: width, innerHeight: height } = window;
+        const pad = 40;
+        const scale = Math.min((width - pad * 2) / 32, (height - pad * 2) / 34) * 0.92;
+        const finalLeft = width / 2 + point.x * scale - size.w / 2;
+        const finalTop = height / 2 + point.y * scale - size.h / 2 + 18;
+        const fromRight = point.x >= 0;
+        const startLeft = fromRight ? width + 80 : -size.w - 80;
+        return { size, finalLeft, finalTop, startLeft };
+      };
+
+      const createFloatingHearts = () => {
+        if (prefersReducedMotion) return;
+        const count = window.innerWidth < 768 ? 5 : 8;
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < count; i += 1) {
+          const heart = document.createElement("div");
+          heart.className = "heart";
+          heart.textContent = heartEmojis[i % heartEmojis.length];
+          heart.style.left = `${8 + ((i * 17) % 84)}%`;
+          heart.style.setProperty("--delay", `${(i * 0.65).toFixed(2)}s`);
+          heart.style.setProperty("--dur", `${5.8 + (i % 4) * 0.6}s`);
+          heart.style.fontSize = `${20 + (i % 5) * 4}px`;
+          fragment.appendChild(heart);
+        }
+        floatingHearts.appendChild(fragment);
+      };
+
+      const syncMusicButton = () => {
+        musicToggle.setAttribute("aria-pressed", musicEnabled ? "false" : "true");
+        musicToggle.setAttribute("aria-label", musicEnabled ? "关闭音乐" : "开启音乐");
+        musicToggle.textContent = musicEnabled ? "♪" : "🔇";
+      };
+
+      const startBgm = () => {
+        if (!bgm) return;
+        bgm.volume = 0.6;
+        musicToggle.hidden = false;
+        const playPromise = bgm.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise
+            .then(() => {
+              musicEnabled = true;
+              syncMusicButton();
+            })
+            .catch(() => {
+              musicEnabled = false;
+              syncMusicButton();
+            });
+        } else {
+          syncMusicButton();
+        }
+      };
+
+      const hideModal = () => {
+        const removeModal = () => {
+          if (modal && modal.parentNode) modal.remove();
+        };
+        modal.classList.add("is-leaving");
+        modal.addEventListener("transitionend", removeModal, { once: true });
+        setTimeout(removeModal, TIMING.modalFade + 80);
+      };
+
+      const spawnPopup = (index) => {
+        const text = displayText(selectedPhrases[index]);
+        const layout = getHeartLayout(heartPoints[index]);
+        const rotation = `${randomRange(-3, 3).toFixed(1)}deg`;
+        const popup = document.createElement("div");
+        popup.className = `popup ${pick(THEMES)} heart-anim`;
+        popup.style.zIndex = String(100 + index);
+        popup.style.setProperty("--start-left", `${layout.startLeft}px`);
+        popup.style.setProperty("--final-left", `${layout.finalLeft}px`);
+        popup.style.setProperty("--final-top", `${layout.finalTop}px`);
+        popup.style.setProperty("--rotation", rotation);
+
+        const header = document.createElement("div");
+        header.className = "popup-header";
+        const icon = document.createElement("span");
+        icon.textContent = "💝";
+        const title = document.createElement("span");
+        title.textContent = "给怡宝的话";
+        header.append(icon, title);
+
+        const body = document.createElement("div");
+        body.className = "popup-body";
+        const line = document.createElement("span");
+        line.textContent = text;
+        body.appendChild(line);
+
+        popup.append(header, body);
+        cardsContainer.appendChild(popup);
+      };
+
+      const freezePopup = (popup) => {
+        const style = window.getComputedStyle(popup);
+        popup.style.animation = "none";
+        popup.style.opacity = "1";
+        popup.style.left = style.left;
+        popup.style.top = style.top;
+        popup.style.transform = style.transform;
+      };
+
+      const gatherThenScatter = () => {
+        const popups = Array.from(cardsContainer.children);
+        const { innerWidth: width, innerHeight: height } = window;
+        const size = getPopupSize();
+        const centerLeft = width / 2 - size.w / 2;
+        const centerTop = height / 2 - size.h / 2;
+
+        setHint("先收进心里，再轻轻散开");
+        popups.forEach((popup, index) => {
+          setTimeout(() => {
+            freezePopup(popup);
+            popup.style.transition = "all 1s cubic-bezier(0.4, 0, 0.2, 1)";
+            popup.style.left = `${centerLeft}px`;
+            popup.style.top = `${centerTop}px`;
+            popup.style.zIndex = String(1000 + index);
+            popup.style.transform = "scale(1) rotate(0deg)";
+          }, index * TIMING.gatherGap);
+        });
+
+        const scatterAt = popups.length * TIMING.gatherGap + 1100;
+        setTimeout(() => {
+          setHint("每一句都想被你看见");
+          popups.forEach((popup, index) => {
+            setTimeout(() => {
+              const left = Math.random() * (width + 80) - 40;
+              const top = Math.random() * (height + 80) - 40;
+              const scale = 1.12 + Math.random() * 0.5;
+              const rot = randomRange(-14, 14);
+              popup.style.transition = "all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
+              popup.style.left = `${left}px`;
+              popup.style.top = `${top}px`;
+              popup.style.transform = `scale(${scale.toFixed(2)}) rotate(${rot.toFixed(1)}deg)`;
+              popup.style.boxShadow = "0 2px 8px rgba(255,105,135,0.4)";
+            }, index * TIMING.scatterGap);
+          });
+        }, scatterAt);
+      };
+
+      const startHeart = () => {
+        selectedPhrases = pickPhrases(getPhraseLimit());
+        heartPoints = generateHeartPoints(selectedPhrases.length);
+        spawnIndex = 0;
+        setHint("从最上边开始，一句一句拼成心");
+
+        if (prefersReducedMotion) {
+          selectedPhrases.forEach((_, index) => spawnPopup(index));
+          return;
+        }
+
+        spawnTimer = setInterval(() => {
+          spawnPopup(spawnIndex);
+          spawnIndex += 1;
+          if (spawnIndex >= selectedPhrases.length) {
+            clearInterval(spawnTimer);
+            spawnTimer = null;
+            setTimeout(gatherThenScatter, TIMING.flyDuration + TIMING.heartHold);
+          }
+        }, TIMING.spawnGap);
+      };
+
+      confirmBtn.addEventListener("click", () => {
+        if (hasStarted) return;
+        hasStarted = true;
+        confirmBtn.disabled = true;
+        hideModal();
+        setTimeout(() => {
+          createFloatingHearts();
+          startBgm();
+          startHeart();
+        }, 120);
+      });
+
+      musicToggle.addEventListener("click", () => {
+        if (!bgm) return;
+        if (bgm.paused) {
+          musicEnabled = true;
+          bgm.play().catch(() => {
+            musicEnabled = false;
+            syncMusicButton();
+          });
+        } else {
+          musicEnabled = false;
+          bgm.pause();
+        }
+        syncMusicButton();
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (!hasStarted || !bgm) return;
+        if (document.hidden) {
+          bgm.pause();
+          return;
+        }
+        if (musicEnabled) bgm.play().catch(() => {});
+      });
+
+      confirmBtn.focus();
     </script>
   </body>
 </html>
-
