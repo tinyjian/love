@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#ff8fab" />
+    <meta name="theme-color" content="#2a0a2e" />
     <meta name="description" content="给怡宝的一份爱心礼物" />
     <meta property="og:title" content="给怡宝的秘密礼物" />
     <meta property="og:description" content="我为你准备了一份爱心礼物" />
@@ -509,6 +509,8 @@
       .letter-dialog p { font-size: 20px; line-height: 1.9; margin: 24px 0 30px; overflow-wrap: anywhere; }
       .letter-dialog form { display: flex; justify-content: center; }
       .letter-dialog .btn-primary { min-height: 44px; }
+      .gift-skip[hidden] { display: none; }
+      .gift-stage:focus { outline: none; }
       .gift-skip:focus-visible, .gift-replay:focus-visible { outline: 3px solid #e9a34e; outline-offset: 4px; }
       @keyframes gift-arrive {
         0%, 8% { opacity: 0; transform: translate(-50%, -45%) scale(.2) rotate(-12deg); }
@@ -654,9 +656,277 @@
         .finale-title h1, .finale.show-btn #openLetter { animation: none; }
         .finale * { transition-duration: 0ms !important; transition-delay: 0ms !important; }
       }
+      /* ---------- Opening dialog polish ---------- */
+      body { background-size: 220% 220%; animation: bg-flow 16s ease-in-out infinite; }
+      @keyframes bg-flow { 0%, 100% { background-position: 0% 30%; } 50% { background-position: 100% 70%; } }
+      .modal-backdrop {
+        background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, .35), rgba(255, 143, 185, .38) 70%);
+        backdrop-filter: blur(10px); overflow: hidden;
+      }
+      .deco-hearts { position: absolute; inset: 0; pointer-events: none; }
+      .deco-hearts span {
+        position: absolute; bottom: -40px; left: var(--x); font-size: var(--s); opacity: 0;
+        animation: deco-rise 9s ease-in var(--d) infinite;
+      }
+      @keyframes deco-rise {
+        0% { opacity: 0; transform: translateY(0) rotate(-10deg); }
+        15% { opacity: .85; }
+        100% { opacity: 0; transform: translateY(-110vh) translateX(24px) rotate(14deg); }
+      }
+      .modal {
+        position: relative; width: min(400px, 86vw); padding: 44px 30px 30px; gap: 0; align-items: center; text-align: center;
+        border-radius: 30px; border: 1px solid rgba(255, 255, 255, .85);
+        background: linear-gradient(160deg, rgba(255, 255, 255, .86), rgba(255, 236, 244, .7));
+        backdrop-filter: blur(18px) saturate(1.3);
+        box-shadow: 0 30px 90px rgba(255, 90, 150, .32), 0 0 0 6px rgba(255, 255, 255, .25), inset 0 1px 0 #fff;
+        animation: modal-pop .9s cubic-bezier(.2, 1.3, .4, 1) both;
+      }
+      @keyframes modal-pop { from { opacity: 0; transform: translateY(26px) scale(.88); } }
+      .modal-icon {
+        position: relative; width: 78px; height: 78px; margin-top: -78px; margin-bottom: 18px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fff, #ffe3ee 70%);
+        box-shadow: 0 12px 30px rgba(255, 90, 150, .38), inset 0 -4px 10px rgba(255, 150, 190, .35);
+        animation: icon-beat 1.5s ease-in-out infinite;
+      }
+      .modal-icon svg { filter: drop-shadow(0 3px 6px rgba(212, 48, 111, .45)); }
+      .modal-icon::before, .modal-icon::after {
+        content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(255, 107, 156, .55);
+        animation: ring-ripple 2.4s ease-out infinite;
+      }
+      .modal-icon::after { animation-delay: 1.2s; }
+      @keyframes icon-beat { 0%, 100% { transform: scale(1); } 14% { transform: scale(1.1); } 28% { transform: scale(1); } 42% { transform: scale(1.06); } }
+      @keyframes ring-ripple { from { opacity: .8; transform: scale(1); } to { opacity: 0; transform: scale(1.9); } }
+      .modal-kicker { font-size: 10px; letter-spacing: .38em; color: #d985a6; margin-bottom: 10px; padding-left: .38em; }
+      .modal-title {
+        font-size: 25px; letter-spacing: .08em; font-weight: 700;
+        background: linear-gradient(90deg, #d4306f, #ff6b9c, #b05cd8, #d4306f); background-size: 250% 100%;
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        animation: title-flow 6s linear infinite;
+      }
+      @keyframes title-flow { to { background-position: -250% 0; } }
+      .modal-body { margin-top: 16px; font-size: 15px; line-height: 1.9; color: #9a5370; letter-spacing: .04em; }
+      .modal-actions { width: 100%; justify-content: center; margin-top: 28px; }
+      .modal .btn-primary {
+        position: relative; width: 100%; padding: 14px 22px; overflow: hidden; border-radius: 999px;
+        font-size: 16px; letter-spacing: .3em; text-indent: .3em; font-weight: 600;
+        background: linear-gradient(135deg, #ff6b9c, #ff4f8b 55%, #ff8fab);
+        box-shadow: 0 12px 28px rgba(255, 79, 139, .42), inset 0 1px 0 rgba(255, 255, 255, .5);
+      }
+      .modal .btn-primary::after {
+        content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%;
+        background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .7), transparent);
+        transform: skewX(-20deg); animation: btn-shine 3.2s ease-in-out infinite;
+      }
+      @keyframes btn-shine { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+      .modal .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 16px 36px rgba(255, 79, 139, .55); }
+      .spark { position: absolute; color: #ff9cc0; animation: spark-twinkle 2.6s ease-in-out infinite; pointer-events: none; }
+      .spark.s1 { top: 14px; left: 22px; font-size: 14px; }
+      .spark.s2 { top: 40px; right: 26px; font-size: 20px; animation-delay: .9s; color: #ffc27a; }
+      .spark.s3 { bottom: 78px; left: 18px; font-size: 16px; animation-delay: 1.7s; }
+      @keyframes spark-twinkle { 0%, 100% { opacity: .2; transform: scale(.7) rotate(0deg); } 50% { opacity: 1; transform: scale(1.2) rotate(30deg); } }
+      @media (prefers-reduced-motion: reduce) {
+        body, .modal, .modal-icon, .modal-icon::before, .modal-icon::after, .modal-title, .modal .btn-primary::after,
+        .spark, .deco-hearts span { animation: none !important; }
+        .deco-hearts { display: none; }
+      }
+      /* ---------- Night-sky opening scene ---------- */
+      .modal-backdrop {
+        background: radial-gradient(ellipse at 50% 40%, #4b1649 0%, #190d29 50%, #080611 100%);
+        backdrop-filter: none;
+      }
+      .modal-backdrop.is-leaving { transition: opacity 500ms ease 700ms; }
+      .modal-backdrop::before, .modal-backdrop::after {
+        content: ""; position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%; filter: blur(60px); pointer-events: none;
+      }
+      .modal-backdrop::before {
+        left: -25vmax; top: -30vmax; background: radial-gradient(circle, rgba(255, 90, 160, .38), transparent 65%);
+        animation: aurora-a 14s ease-in-out infinite alternate;
+      }
+      .modal-backdrop::after {
+        right: -28vmax; bottom: -34vmax; background: radial-gradient(circle, rgba(140, 90, 255, .34), transparent 65%);
+        animation: aurora-b 17s ease-in-out infinite alternate;
+      }
+      @keyframes aurora-a { to { transform: translate(14vmax, 10vmax) scale(1.15); } }
+      @keyframes aurora-b { to { transform: translate(-12vmax, -8vmax) scale(1.2); } }
+      .night-stars { position: absolute; inset: 0; pointer-events: none; }
+      .night-stars i {
+        position: absolute; left: var(--x); top: var(--y); width: var(--z); height: var(--z); border-radius: 50%;
+        background: #fff0f5; box-shadow: 0 0 6px 1px rgba(255, 200, 225, .8);
+        animation: star-blink var(--t) ease-in-out var(--d) infinite;
+      }
+      @keyframes star-blink { 0%, 100% { opacity: .15; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.2); } }
+      .shooting-star {
+        position: absolute; top: 12%; left: 70%; width: 120px; height: 2px; opacity: 0; pointer-events: none;
+        background: linear-gradient(90deg, #fff, rgba(255, 190, 220, 0)); transform: rotate(215deg);
+        animation: shoot 7s ease-in 2s infinite;
+      }
+      .shooting-star.b { top: 30%; left: 95%; animation-delay: 5.5s; animation-duration: 9s; }
+      @keyframes shoot {
+        0% { opacity: 0; transform: translate(0, 0) rotate(215deg); }
+        3% { opacity: 1; }
+        10% { opacity: 0; transform: translate(-380px, 270px) rotate(215deg); }
+        100% { opacity: 0; transform: translate(-380px, 270px) rotate(215deg); }
+      }
+      .deco-hearts { z-index: 1; }
+      .modal {
+        z-index: 2;
+        border-color: rgba(255, 255, 255, .26);
+        background: linear-gradient(160deg, rgba(255, 255, 255, .17), rgba(255, 150, 200, .08));
+        box-shadow: 0 30px 90px rgba(0, 0, 0, .5), 0 0 60px rgba(255, 90, 160, .28), 0 0 0 6px rgba(255, 255, 255, .06), inset 0 1px 0 rgba(255, 255, 255, .35);
+      }
+      .modal-kicker { color: #eab4cd; }
+      .modal-title { background-image: linear-gradient(90deg, #fff3c9, #ff9fcb, #d9b3ff, #fff3c9); filter: drop-shadow(0 0 14px rgba(255, 128, 181, .45)); }
+      .modal-body { color: #f3d6e5; }
+      .modal-icon { box-shadow: 0 0 40px rgba(255, 100, 160, .65), inset 0 -4px 10px rgba(255, 150, 190, .35); }
+      .spark { color: #ffd6e8; }
+      .spark.s2 { color: #ffe0a8; }
+      @media (prefers-reduced-motion: reduce) {
+        .modal-backdrop::before, .modal-backdrop::after, .night-stars i, .shooting-star { animation: none !important; }
+        .shooting-star { display: none; }
+      }
+      /* ---------- Deep-pink night sky stage ---------- */
+      body {
+        background-color: #1a0a24;
+        background-image: radial-gradient(ellipse at 50% 38%, #6e1d5c 0%, #40104a 38%, #1a0a26 100%);
+        background-size: 200% 200%;
+      }
+      body::before {
+        background: radial-gradient(circle at 18% 22%, rgba(255, 90, 170, .30), transparent 55%),
+          radial-gradient(circle at 84% 28%, rgba(170, 100, 255, .22), transparent 60%),
+          radial-gradient(circle at 50% 92%, rgba(255, 120, 180, .22), transparent 65%);
+        animation: aurora-a 18s ease-in-out infinite alternate;
+      }
+      .sky { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+      .heart {
+        font-size: 24px; color: #ff7ab8; line-height: 0;
+      }
+      .heart svg { display: block; width: 1em; height: 1em; filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 14px currentColor); }
+      .stage-hint { color: #ffc2dd; text-shadow: none; }
+      .stage-hint strong {
+        background: linear-gradient(90deg, #fff3c9, #ff9fcb, #d9b3ff, #fff3c9); background-size: 250% 100%;
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        filter: drop-shadow(0 0 10px rgba(255, 110, 175, .55)); animation: title-flow 6s linear infinite;
+      }
+      .stage-hint span { color: #e9b6cf; opacity: .9; }
+      .heart-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; transform-origin: 50% 46%; }
+      .heart-layer.is-beating { animation: heart-pulse 1.5s ease-in-out infinite; }
+      @keyframes heart-pulse { 0%, 100% { transform: scale(1); } 14% { transform: scale(1.028); } 28% { transform: scale(1); } 42% { transform: scale(1.016); } }
+      .constellation { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 400; pointer-events: none; transition: opacity .6s ease; }
+      .constellation.is-fading { opacity: 0; }
+      .popup { --glow: 255, 122, 184; overflow: visible; }
+      .popup.theme-rose { --glow: 255, 92, 138; }
+      .popup.theme-lavender { --glow: 197, 155, 255; }
+      .popup.theme-peach { --glow: 255, 178, 122; }
+      .popup.theme-coral { --glow: 255, 138, 122; }
+      .cards .popup[class] {
+        background: linear-gradient(160deg, rgba(92, 28, 90, .86), rgba(50, 16, 66, .88));
+        border: 1px solid rgba(var(--glow), .6);
+        box-shadow: 0 0 16px rgba(var(--glow), .35), inset 0 0 12px rgba(var(--glow), .12);
+      }
+      .cards .popup[class]:hover { box-shadow: 0 0 26px rgba(var(--glow), .7), inset 0 0 14px rgba(var(--glow), .2); }
+      .cards .popup[class] .popup-header {
+        background: rgba(var(--glow), .16); border-bottom: 1px solid rgba(var(--glow), .3);
+        color: #ffc8e0; border-radius: 7px 7px 0 0; overflow: hidden;
+      }
+      .cards .popup[class] .popup-body {
+        background: transparent; color: #fff1f7; border-radius: 0 0 7px 7px;
+        text-shadow: 0 0 10px rgba(var(--glow), .55);
+      }
+      .popup::before {
+        content: ""; position: absolute; top: 50%; width: 150px; height: 4px; margin-top: -2px; border-radius: 4px;
+        opacity: 0; pointer-events: none; animation: card-trail 3s ease-out both;
+      }
+      .popup.from-right::before { left: 100%; background: linear-gradient(90deg, rgba(var(--glow), .95), rgba(var(--glow), 0)); }
+      .popup.from-left::before { right: 100%; background: linear-gradient(270deg, rgba(var(--glow), .95), rgba(var(--glow), 0)); }
+      @keyframes card-trail { 0% { opacity: 0; } 6% { opacity: .9; } 22% { opacity: .7; } 34%, 100% { opacity: 0; } }
+      .popup::after {
+        content: ""; position: absolute; inset: -3px; border-radius: 11px; border: 2px solid rgba(var(--glow), .85);
+        opacity: 0; pointer-events: none; animation: card-ring .9s ease-out .62s both;
+      }
+      @keyframes card-ring { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.5, 1.9); } }
+      .gift-replay {
+        width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center;
+        border-radius: 50%; font-size: 18px; color: #ffd6e8; background: rgba(255, 255, 255, .1);
+        border: 1px solid rgba(255, 255, 255, .28); box-shadow: 0 0 18px rgba(255, 100, 170, .35); backdrop-filter: blur(6px);
+      }
+      .gather-flash {
+        position: fixed; left: 50%; top: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%;
+        z-index: 45; pointer-events: none;
+        background: radial-gradient(circle, #fff 0%, #ffd0e6 30%, rgba(255, 120, 180, 0) 70%);
+        animation: flash-burst 1s ease-out forwards;
+      }
+      @keyframes flash-burst { 0% { opacity: 0; transform: scale(1); } 20% { opacity: 1; } 100% { opacity: 0; transform: scale(70); } }
+      @media (prefers-reduced-motion: reduce) {
+        .popup::before, .popup::after, .heart-layer.is-beating, .stage-hint strong, body::before, .gather-flash { animation: none !important; }
+        .popup::before, .popup::after { display: none; }
+      }
+      /* ---------- Dark glass letter dialog (card popup) ---------- */
+      .letter-dialog {
+        position: relative; width: min(400px, calc(100% - 40px)); padding: 40px 28px 30px; overflow: visible;
+        border: 1px solid rgba(255, 255, 255, .26); border-radius: 28px; color: #f6dce9;
+        background: linear-gradient(160deg, rgba(255, 255, 255, .17), rgba(255, 150, 200, .08)), rgba(34, 12, 48, .78);
+        backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, .55), 0 0 60px rgba(255, 90, 160, .28), 0 0 0 6px rgba(255, 255, 255, .06), inset 0 1px 0 rgba(255, 255, 255, .35);
+      }
+      .letter-dialog[open] { animation: letter-pop .5s cubic-bezier(.2, 1.3, .4, 1) both; }
+      @keyframes letter-pop { from { opacity: 0; transform: translateY(20px) scale(.92); } }
+      .letter-dialog::backdrop {
+        background: radial-gradient(ellipse at 50% 40%, rgba(110, 29, 92, .55), rgba(12, 5, 20, .82));
+        backdrop-filter: blur(8px);
+      }
+      .letter-dialog::before {
+        content: "💝"; position: absolute; left: 50%; top: -26px; width: 52px; height: 52px; transform: translateX(-50%);
+        display: flex; align-items: center; justify-content: center; font-size: 26px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fff, #ffe3ee 70%);
+        box-shadow: 0 0 30px rgba(255, 100, 160, .65);
+      }
+      .letter-dialog small { color: #eab4cd; letter-spacing: .3em; }
+      .letter-dialog h2 {
+        font-size: 20px; letter-spacing: .1em; font-weight: 700;
+        background: linear-gradient(90deg, #fff3c9, #ff9fcb, #d9b3ff, #fff3c9); background-size: 250% 100%;
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        filter: drop-shadow(0 0 12px rgba(255, 128, 181, .45)); animation: title-flow 6s linear infinite;
+      }
+      .letter-dialog p { color: #fff1f7; text-shadow: 0 0 14px rgba(255, 110, 175, .5); }
+      .letter-dialog .btn-primary {
+        border-radius: 999px; padding: 12px 30px; letter-spacing: .2em; text-indent: .2em;
+        background: linear-gradient(135deg, #ff6b9c, #ff4f8b 55%, #ff8fab);
+        box-shadow: 0 10px 26px rgba(255, 79, 139, .42), inset 0 1px 0 rgba(255, 255, 255, .5);
+      }
+      .letter-dialog .btn-primary:focus-visible { outline: 3px solid #e9a34e; outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) {
+        .letter-dialog[open], .letter-dialog h2 { animation: none !important; }
+      }
+      /* ---------- Music choice ---------- */
+      .modal-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+      .modal-tip { text-align: center; font-size: 12px; letter-spacing: .12em; color: #d9a9c2; margin-bottom: 6px; }
+      .modal-actions .btn-primary { order: 0; }
+      .modal-actions .btn-ghost { order: 1; }
+      .modal .btn-ghost {
+        position: relative; width: 100%; padding: 12px 22px; border-radius: 999px; cursor: pointer; font: inherit;
+        font-size: 14px; letter-spacing: .2em; text-indent: .2em; color: #eab4cd; background: rgba(255, 255, 255, .07);
+        border: 1px solid rgba(255, 255, 255, .26); box-shadow: none; touch-action: manipulation;
+        transition: background .25s ease, color .25s ease, transform .2s ease;
+      }
+      .modal .btn-ghost:hover { background: rgba(255, 255, 255, .14); color: #fff1f7; transform: translateY(-1px); }
+      .modal .btn-ghost:focus-visible { outline: 3px solid #e9a34e; outline-offset: 3px; }
+      .music-toggle.needs-click { animation: finale-pulse 1.8s ease-in-out infinite; }
+      .music-hint {
+        position: fixed; right: calc(var(--safe-right) + 54px); bottom: calc(var(--safe-bottom) + 8px); z-index: 50;
+        padding: 8px 14px; border-radius: 20px; font-size: 12px; letter-spacing: .08em; color: #fff1f7; pointer-events: none;
+        background: rgba(40, 14, 56, .88); border: 1px solid rgba(255, 255, 255, .25); box-shadow: 0 0 18px rgba(255, 100, 170, .4);
+        animation: hint-in .5s ease both;
+      }
+      @keyframes hint-in { from { opacity: 0; transform: translateX(10px); } }
+      @media (prefers-reduced-motion: reduce) { .music-toggle.needs-click, .music-hint { animation: none !important; } }
     </style>
   </head>
   <body>
+    <div class="sky" aria-hidden="true">
+      <div class="night-stars" id="skyStars"></div>
+      <div class="shooting-star"></div>
+      <div class="shooting-star b"></div>
+    </div>
     <div id="floatingHearts" class="floating-hearts"></div>
     <audio id="bgm" src="./assets/love.mp3" preload="none" loop hidden></audio>
     <div class="experience">
@@ -664,7 +934,10 @@
         <strong>这些话，都是给你的</strong>
         <span id="stageHintText">一句一句飞过来，拼成一颗心</span>
       </p>
-      <div id="cards" class="cards"></div>
+      <div id="heartLayer" class="heart-layer">
+        <div id="cards" class="cards"></div>
+        <canvas id="constellation" class="constellation" aria-hidden="true"></canvas>
+      </div>
     </div>
 
     <div
@@ -675,16 +948,43 @@
       aria-labelledby="modalTitle"
       aria-describedby="modalBody"
     >
+      <div class="night-stars" id="nightStars" aria-hidden="true"></div>
+      <div class="shooting-star" aria-hidden="true"></div>
+      <div class="shooting-star b" aria-hidden="true"></div>
+      <div class="deco-hearts" aria-hidden="true">
+        <span style="--x:8%;--d:0s;--s:16px">💗</span>
+        <span style="--x:22%;--d:2.2s;--s:22px">💕</span>
+        <span style="--x:36%;--d:4.1s;--s:14px">💖</span>
+        <span style="--x:64%;--d:1.2s;--s:20px">💗</span>
+        <span style="--x:78%;--d:3.3s;--s:15px">💕</span>
+        <span style="--x:91%;--d:5s;--s:24px">💖</span>
+      </div>
       <div class="modal">
-        <div class="modal-header">
-          <div class="modal-icon">💝</div>
-          <div class="modal-title" id="modalTitle">给怡宝的秘密礼物</div>
+        <span class="spark s1" aria-hidden="true">✦</span>
+        <span class="spark s2" aria-hidden="true">✦</span>
+        <span class="spark s3" aria-hidden="true">✧</span>
+        <div class="modal-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 60" width="40" height="38">
+            <defs>
+              <linearGradient id="mhGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffd1e3" />
+                <stop offset=".5" stop-color="#ff5c9a" />
+                <stop offset="1" stop-color="#d4306f" />
+              </linearGradient>
+            </defs>
+            <path d="M32 56C28 52 4 36 4 19 4 8 18 3 27 12L32 18l5-6C46 3 60 8 60 19c0 17-24 33-28 37Z" fill="url(#mhGrad)" />
+            <path d="M12 20c0-6 5-9 10-7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".75" />
+          </svg>
         </div>
+        <p class="modal-kicker">A SECRET GIFT · FOR YOU</p>
+        <div class="modal-title" id="modalTitle">给怡宝的秘密礼物</div>
         <div class="modal-body" id="modalBody">
           怡宝，我为你准备了一份爱心礼物。<br />准备好开启这份心意了吗？
         </div>
         <div class="modal-actions">
-          <button id="confirmBtn" class="btn-primary" type="button">开启惊喜</button>
+          <p class="modal-tip" id="modalTip">🎧 戴上耳机，体验更好</p>
+          <button id="confirmBtn" class="btn-primary" type="button">🎵 带声音开启</button>
+          <button id="muteBtn" class="btn-ghost" type="button">静音开启</button>
         </div>
       </div>
     </div>
@@ -721,7 +1021,7 @@
       <div class="gift-copy"><small>A GIFT JUST FOR YOU</small><h1>送给怡宝的专属偏爱</h1><p>星河之心 · 我的浪漫都与你有关</p></div>
       <button id="giftSkip" class="gift-skip" type="button">跳过特效</button>
     </section>
-    <button id="giftReplay" class="gift-replay" type="button" hidden>✧ 重播星河之心</button>
+    <button id="giftReplay" class="gift-replay" type="button" hidden aria-label="重播星河之心" title="重播星河之心">✧</button>
 
     <section id="finale" class="finale" hidden aria-label="告白">
       <canvas id="finaleFx" aria-hidden="true"></canvas>
@@ -1006,11 +1306,18 @@
       const getHeartLayout = (point) => {
         const size = getPopupSize();
         const { innerWidth: width, innerHeight: height } = window;
-        const cardScale = 1;
-        const scale = Math.max(0, Math.min((width - size.w * cardScale - 32) / 32,
-          (height - size.h * cardScale - 180) / 29));
+        const topGap = 70, bottomGap = 34;
+        const availH = Math.max(120, height - topGap - bottomGap);
+        let cardScale = 1;
+        let scale = 0;
+        // Shrink the cards a little on small windows so the heart outline stays readable.
+        for (let i = 0; i < 3; i += 1) {
+          scale = Math.max(0, Math.min((width - size.w * cardScale - 32) / 32, (availH - size.h * cardScale) / 29));
+          cardScale = Math.min(1, Math.max(0.6, scale / 18));
+        }
+        const centerY = topGap + availH / 2;
         const finalLeft = width / 2 + point.x * scale - size.w / 2;
-        const finalTop = height / 2 + (point.y - 2.5) * scale - size.h / 2;
+        const finalTop = centerY + (point.y - 2.5) * scale - size.h / 2;
         const fromRight = point.x >= 0;
         const startLeft = fromRight ? width + 80 : -size.w - 80;
         return { size, finalLeft, finalTop, startLeft, cardScale };
@@ -1018,12 +1325,13 @@
 
       const createFloatingHearts = () => {
         if (prefersReducedMotion) return;
-        const count = window.innerWidth < 768 ? 5 : 8;
+        const count = window.innerWidth < 768 ? 6 : 10;
         const fragment = document.createDocumentFragment();
         for (let i = 0; i < count; i += 1) {
           const heart = document.createElement("div");
           heart.className = "heart";
-          heart.textContent = heartEmojis[i % heartEmojis.length];
+          heart.innerHTML = '<svg viewBox="0 0 64 60" aria-hidden="true"><path d="M32 56C28 52 4 36 4 19 4 8 18 3 27 12L32 18l5-6C46 3 60 8 60 19c0 17-24 33-28 37Z" fill="currentColor"/></svg>';
+          heart.style.color = ["#ff7ab8", "#ffb3d1", "#ff5c9a", "#d9a6ff", "#ffd3a6"][i % 5];
           heart.style.left = `${8 + ((i * 17) % 84)}%`;
           heart.style.setProperty("--delay", `${(i * 0.65).toFixed(2)}s`);
           heart.style.setProperty("--dur", `${5.8 + (i % 4) * 0.6}s`);
@@ -1039,24 +1347,79 @@
         musicToggle.textContent = musicEnabled ? "♪" : "🔇";
       };
 
+      // ---- Music preference (remembered across visits) ----
+      const MUSIC_KEY = "love:music";
+      const REPLAY_KEY = "love:replay";
+      const getMusicPref = () => { try { return localStorage.getItem(MUSIC_KEY) === "off" ? "off" : "on"; } catch (e) { return "on"; } };
+      const setMusicPref = (value) => { try { localStorage.setItem(MUSIC_KEY, value); } catch (e) { /* storage unavailable */ } };
+      const isReplay = (() => {
+        try {
+          const flag = sessionStorage.getItem(REPLAY_KEY) === "1";
+          sessionStorage.removeItem(REPLAY_KEY);
+          return flag;
+        } catch (e) { return false; }
+      })();
+
+      let bgmFade = null;
+      const fadeBgm = (to, ms) => {
+        if (!bgm) return;
+        cancelAnimationFrame(bgmFade);
+        const from = bgm.volume;
+        const t0 = performance.now();
+        const step = (now) => {
+          const k = Math.min((now - t0) / ms, 1);
+          bgm.volume = Math.min(1, Math.max(0, from + (to - from) * k));
+          if (k < 1) bgmFade = requestAnimationFrame(step);
+        };
+        bgmFade = requestAnimationFrame(step);
+      };
+
+      let musicBlocked = false;
+      let musicHintEl = null;
+      const clearMusicHint = () => {
+        musicToggle.classList.remove("needs-click");
+        if (musicHintEl) { musicHintEl.remove(); musicHintEl = null; }
+      };
+      const showMusicHint = () => {
+        if (musicHintEl || !musicBlocked) return;
+        musicToggle.classList.add("needs-click");
+        musicHintEl = document.createElement("div");
+        musicHintEl.className = "music-hint";
+        musicHintEl.textContent = "♪ 点我开启音乐";
+        document.body.appendChild(musicHintEl);
+        setTimeout(() => { if (musicHintEl) { musicHintEl.remove(); musicHintEl = null; } }, 6000);
+      };
+
       const startBgm = () => {
         if (!bgm) return;
-        bgm.volume = 0.6;
+        bgm.volume = 0;
         musicToggle.hidden = false;
         const playPromise = bgm.play();
-        if (playPromise && typeof playPromise.catch === "function") {
-          playPromise
-            .then(() => {
-              musicEnabled = true;
-              syncMusicButton();
-            })
-            .catch(() => {
-              musicEnabled = false;
-              syncMusicButton();
-            });
-        } else {
+        const onPlaying = () => {
+          musicEnabled = true;
+          musicBlocked = false;
           syncMusicButton();
+          fadeBgm(0.6, 2000);
+        };
+        const onBlocked = () => {
+          musicEnabled = false;
+          musicBlocked = true;
+          bgm.volume = 0.6;
+          syncMusicButton();
+        };
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.then(onPlaying).catch(onBlocked);
+        } else {
+          onPlaying();
         }
+      };
+
+      const startMuted = () => {
+        musicEnabled = false;
+        musicBlocked = false;
+        if (bgm) bgm.volume = 0.6;
+        musicToggle.hidden = false;
+        syncMusicButton();
       };
 
       const hideModal = () => {
@@ -1064,8 +1427,7 @@
           if (modal && modal.parentNode) modal.remove();
         };
         modal.classList.add("is-leaving");
-        modal.addEventListener("transitionend", removeModal, { once: true });
-        setTimeout(removeModal, TIMING.modalFade + 80);
+        setTimeout(removeModal, 1500);
       };
 
       const spawnPopup = (index) => {
@@ -1079,7 +1441,7 @@
           letterText.textContent = selectedPhrases[index];
           letterDialog.showModal();
         });
-        popup.className = `popup ${pick(THEMES)} heart-anim`;
+        popup.className = `popup ${pick(THEMES)} heart-anim ${layout.startLeft < 0 ? "from-left" : "from-right"}`;
         popup.style.zIndex = String(100 + index);
         popup.style.setProperty("--card-scale", layout.cardScale);
         popup.style.setProperty("--start-left", `${layout.startLeft}px`);
@@ -1120,6 +1482,8 @@
         const { innerWidth: width, innerHeight: height } = window;
         const size = getPopupSize();
         setHint("先收进心里，再轻轻散开");
+        stopConstellation();
+        heartLayer.classList.remove("is-beating");
         popups.forEach((popup, index) => {
           setTimeout(() => {
             freezePopup(popup);
@@ -1129,7 +1493,8 @@
             popup.style.left = `${width / 2 - size.w / 2}px`;
             popup.style.top = `${height / 2 - size.h / 2}px`;
             popup.style.zIndex = String(1000 + index);
-            popup.style.transform = "scale(1) rotate(0deg)";
+            popup.style.transform = "scale(0.22) rotate(0deg)";
+            popup.style.filter = "brightness(1.7) saturate(1.2)";
           }, index * TIMING.gatherGap);
         });
         // Once everything has gathered at the centre, burst into the finale.
@@ -1164,6 +1529,10 @@
           if (spawnIndex >= selectedPhrases.length) {
             clearInterval(spawnTimer);
             spawnTimer = null;
+            setTimeout(() => {
+              heartLayer.classList.add("is-beating");
+              startConstellation();
+            }, TIMING.flyDuration * 0.3 + 250);
             setTimeout(gatherThenScatter, TIMING.flyDuration + TIMING.heartHold);
           }
         }, TIMING.spawnGap);
@@ -1506,11 +1875,15 @@
         }, prefersReducedMotion ? 0 : 650);
       };
 
-      const playGift = (callback = () => {}) => {
+      let giftSkippable = false;
+      const playGift = (callback = () => {}, allowSkip = false) => {
+        giftSkippable = allowSkip;
+        giftSkip.hidden = !allowSkip;
+        giftStage.tabIndex = -1;
         if (!giftStage.hidden) return;
         giftReplay.hidden = true;
         musicToggle.hidden = true;
-        giftDone = () => { musicToggle.hidden = false; callback(); };
+        giftDone = () => { musicToggle.hidden = false; showMusicHint(); callback(); };
         giftStage.hidden = false;
         resizeGift();
         window.addEventListener("resize", resizeGift);
@@ -1521,7 +1894,7 @@
         // Flush the initial state so replays restart the CSS entrance animation.
         void giftStage.offsetWidth;
         giftStage.classList.add("is-active");
-        giftSkip.focus({ preventScroll: true });
+        (allowSkip ? giftSkip : giftStage).focus({ preventScroll: true });
         if (!prefersReducedMotion && giftContext) giftFrame = requestAnimationFrame(drawGift);
         // Use the 3D heart if the library is ready (or arrives within ~2s); otherwise keep the SVG heart.
         if (THREE) start3D();
@@ -1532,29 +1905,54 @@
       };
 
       giftSkip.addEventListener("click", finishGift);
-      giftReplay.addEventListener("click", () => playGift());
+      giftReplay.addEventListener("click", () => playGift(() => {}, true));
       giftStage.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") finishGift();
-        if (event.key === "Tab") { event.preventDefault(); giftSkip.focus(); }
+        if (event.key === "Escape" && giftSkippable) finishGift();
+        if (event.key === "Tab") { event.preventDefault(); if (giftSkippable) giftSkip.focus(); }
       });
 
-      confirmBtn.addEventListener("click", () => {
+      const muteBtn = document.getElementById("muteBtn");
+      const modalTip = document.getElementById("modalTip");
+      const beginExperience = (withSound) => {
         if (hasStarted) return;
         hasStarted = true;
         confirmBtn.disabled = true;
+        muteBtn.disabled = true;
+        setMusicPref(withSound ? "on" : "off");
         hideModal();
-        startBgm();
+        if (withSound) startBgm(); else startMuted();
         playGift(() => {
           createFloatingHearts();
           startHeart();
         });
-      });
+      };
+
+      // Opening dialog: normally two choices (the last choice is emphasised);
+      // after "再看一遍" it simply repeats the previous choice with one button.
+      const lastPref = getMusicPref();
+      if (isReplay) {
+        muteBtn.hidden = true;
+        modalTip.hidden = true;
+        confirmBtn.textContent = lastPref === "off" ? "↺ 再看一遍 · 静音" : "↺ 再看一遍 · 带声音";
+        confirmBtn.addEventListener("click", () => beginExperience(lastPref !== "off"));
+      } else {
+        const preferMute = lastPref === "off";
+        confirmBtn.classList.toggle("btn-primary", !preferMute);
+        confirmBtn.classList.toggle("btn-ghost", preferMute);
+        muteBtn.classList.toggle("btn-primary", preferMute);
+        muteBtn.classList.toggle("btn-ghost", !preferMute);
+        confirmBtn.addEventListener("click", () => beginExperience(true));
+        muteBtn.addEventListener("click", () => beginExperience(false));
+      }
 
       musicToggle.addEventListener("click", () => {
         if (!bgm) return;
+        clearMusicHint();
+        musicBlocked = false;
         if (bgm.paused) {
           musicEnabled = true;
-          bgm.play().catch(() => {
+          bgm.volume = 0;
+          bgm.play().then(() => fadeBgm(0.6, 1200)).catch(() => {
             musicEnabled = false;
             syncMusicButton();
           });
@@ -1562,6 +1960,7 @@
           musicEnabled = false;
           bgm.pause();
         }
+        setMusicPref(musicEnabled ? "on" : "off");
         syncMusicButton();
       });
 
@@ -1870,14 +2269,21 @@
       const startFinale = () => {
         if (finaleStarted) return;
         finaleStarted = true;
+        if (bgm && !bgm.paused) fadeBgm(0.85, 3000); // let the music swell a little for the finale
         stageHint.classList.remove("is-visible");
         giftReplay.hidden = true;
         Array.from(cardsContainer.children).forEach((popup) => {
           popup.style.transition = "opacity .6s ease, transform .6s ease";
           popup.style.opacity = "0";
-          popup.style.transform = "scale(1.7) rotate(0deg)";
+          popup.style.transform = "scale(0.05) rotate(0deg)";
         });
         setTimeout(() => { cardsContainer.textContent = ""; }, 900);
+        if (!prefersReducedMotion) {
+          const flash = document.createElement("div");
+          flash.className = "gather-flash";
+          document.body.appendChild(flash);
+          setTimeout(() => flash.remove(), 1100);
+        }
 
         finale.hidden = false;
         fxResize();
@@ -1901,7 +2307,10 @@
         if (!letterLayer.hidden || event.target.closest("button")) return;
         fxBurst(event.clientX, event.clientY, Math.random() < 0.5);
       });
-      finaleAgain.addEventListener("click", () => location.reload());
+      finaleAgain.addEventListener("click", () => {
+        try { sessionStorage.setItem(REPLAY_KEY, "1"); } catch (e) { /* ignore */ }
+        location.reload();
+      });
 
       // Typewriter: tapping the paper speeds it up.
       let typeBoost = 1;
@@ -1982,7 +2391,102 @@
         fxAuto = setInterval(() => { if (!document.hidden) fxRandomBurst(); }, 1500);
       };
 
-      confirmBtn.focus();
+      // ---------- Constellation lines tracing the heart ----------
+      const heartLayer = document.getElementById("heartLayer");
+      const constCanvas = document.getElementById("constellation");
+      const constCtx = constCanvas.getContext("2d");
+      let constFrame = null;
+      let constStart = 0;
+      let constPts = null;
+      let constW = 0, constH = 0;
+
+      const sizeConstellation = () => {
+        constW = window.innerWidth;
+        constH = window.innerHeight;
+        const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+        constCanvas.width = Math.round(constW * ratio);
+        constCanvas.height = Math.round(constH * ratio);
+        constCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        constPts = null;
+      };
+
+      const drawConstellation = (now) => {
+        if (!constPts) {
+          constPts = heartPoints.map((point) => {
+            const layout = getHeartLayout(point);
+            return { x: layout.finalLeft + layout.size.w / 2, y: layout.finalTop + layout.size.h / 2 };
+          });
+        }
+        const total = constPts.length;
+        const progress = prefersReducedMotion ? 1 : Math.min((now - constStart) / 1800, 1);
+        const reach = progress * total;
+        const pulse = 0.65 + 0.25 * Math.sin((now - constStart) / 260);
+        constCtx.clearRect(0, 0, constW, constH);
+        constCtx.globalCompositeOperation = "lighter";
+        constCtx.lineWidth = 1.3;
+        constCtx.strokeStyle = "rgba(255, 170, 215, " + (progress < 1 ? 0.8 : pulse).toFixed(2) + ")";
+        constCtx.shadowColor = "#ff7ab8";
+        constCtx.shadowBlur = 12;
+        constCtx.beginPath();
+        for (let i = 0; i <= Math.min(Math.floor(reach), total - 1); i += 1) {
+          const p = constPts[i];
+          if (i) constCtx.lineTo(p.x, p.y); else constCtx.moveTo(p.x, p.y);
+        }
+        if (progress >= 1) constCtx.lineTo(constPts[0].x, constPts[0].y);
+        constCtx.stroke();
+        constCtx.shadowBlur = 0;
+        for (let i = 0; i < Math.min(Math.floor(reach) + 1, total); i += 1) {
+          const p = constPts[i];
+          const tw = 0.55 + 0.45 * Math.sin((now - constStart) / 320 + i * 1.7);
+          constCtx.globalAlpha = tw;
+          constCtx.fillStyle = "#fff4e2";
+          constCtx.beginPath(); constCtx.arc(p.x, p.y, 2 + tw, 0, Math.PI * 2); constCtx.fill();
+        }
+        constCtx.globalAlpha = 1;
+        constCtx.globalCompositeOperation = "source-over";
+        constFrame = requestAnimationFrame(drawConstellation);
+      };
+
+      const startConstellation = () => {
+        if (!heartPoints.length || constFrame) return;
+        sizeConstellation();
+        constCanvas.classList.remove("is-fading");
+        constStart = performance.now();
+        constFrame = requestAnimationFrame(drawConstellation);
+      };
+
+      const stopConstellation = () => {
+        constCanvas.classList.add("is-fading");
+        setTimeout(() => {
+          cancelAnimationFrame(constFrame);
+          constFrame = null;
+          constCtx.clearRect(0, 0, constW, constH);
+        }, 650);
+      };
+      window.addEventListener("resize", () => { if (constFrame) sizeConstellation(); });
+
+      // ---------- Starfield (opening dialog + main stage) ----------
+      (() => {
+        if (prefersReducedMotion) return;
+        const count = window.innerWidth < 600 ? 45 : 90;
+        ["nightStars", "skyStars"].forEach((id) => {
+          const box = document.getElementById(id);
+          if (!box) return;
+          const fragment = document.createDocumentFragment();
+          for (let i = 0; i < count; i += 1) {
+            const star = document.createElement("i");
+            star.style.setProperty("--x", `${(Math.random() * 100).toFixed(1)}%`);
+            star.style.setProperty("--y", `${(Math.random() * 100).toFixed(1)}%`);
+            star.style.setProperty("--z", `${randomRange(1, 2.8).toFixed(1)}px`);
+            star.style.setProperty("--t", `${randomRange(2, 5).toFixed(1)}s`);
+            star.style.setProperty("--d", `${randomRange(0, 4).toFixed(1)}s`);
+            fragment.appendChild(star);
+          }
+          box.appendChild(fragment);
+        });
+      })();
+
+      (isReplay || getMusicPref() === "on" ? confirmBtn : muteBtn).focus();
     </script>
   </body>
 </html>
