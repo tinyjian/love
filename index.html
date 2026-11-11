@@ -919,9 +919,196 @@
       }
       @keyframes hint-in { from { opacity: 0; transform: translateX(10px); } }
       @media (prefers-reduced-motion: reduce) { .music-toggle.needs-click, .music-hint { animation: none !important; } }
+      /* ---------- Opening: cinematic intro + hold to light ---------- */
+      .modal-backdrop { background: radial-gradient(ellipse at 50% 38%, #1c2c68 0%, #0c1235 45%, #04030d 100%); }
+      .modal-backdrop::before { background: radial-gradient(circle, rgba(90, 160, 255, .32), transparent 65%); animation: aurora-a 14s ease-in-out infinite alternate, intro-fade 3.6s ease both; }
+      .modal-backdrop::after { background: radial-gradient(circle, rgba(170, 100, 255, .3), transparent 65%); animation: aurora-b 17s ease-in-out infinite alternate, intro-fade 3.6s ease both; }
+      @keyframes intro-fade { from { opacity: 0; } }
+      .modal-backdrop .night-stars { transform-origin: 50% 50%; animation: intro-zoom 3.6s cubic-bezier(.16, .8, .2, 1) both; transition: filter .3s; }
+      @keyframes intro-zoom { from { opacity: 0; transform: scale(3.4); } 35% { opacity: .9; } to { opacity: 1; transform: scale(1); } }
+      .first-star {
+        position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: #fff; pointer-events: none;
+        box-shadow: 0 0 20px 8px rgba(190, 220, 255, .9), 0 0 70px 26px rgba(120, 160, 255, .5);
+        animation: first-star 3.2s ease-in-out both;
+      }
+      @keyframes first-star { 0% { opacity: 0; transform: scale(.2); } 25% { opacity: 1; transform: scale(1.5); } 60% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.3); } }
+      .modal-backdrop .modal { animation: modal-pop .9s cubic-bezier(.2, 1.3, .4, 1) 2.7s both; }
+      .modal-backdrop .deco-hearts { animation: intro-fade 2s ease 3s both; }
+      .modal-backdrop.is-holding .night-stars { filter: brightness(calc(1 + var(--hp, 0) * 1.4)); }
+      .modal-backdrop.is-lit .modal { animation: lit-out .9s ease forwards; pointer-events: none; }
+      @keyframes lit-out { to { opacity: 0; transform: scale(1.08) translateY(-10px); filter: blur(4px); } }
+      .sound-choice { align-self: center; display: flex; gap: 2px; padding: 4px; margin-bottom: 16px; border-radius: 999px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .2); }
+      .sound-choice[hidden] { display: none; }
+      .sound-opt { font: inherit; font-size: 14px; letter-spacing: .12em; padding: 9px 22px; border: 0; border-radius: 999px; background: transparent; color: #d9a9c2; cursor: pointer; transition: background .25s ease, color .25s ease, box-shadow .25s ease; touch-action: manipulation; }
+      .sound-opt.is-on { background: linear-gradient(135deg, #ff6b9c, #ff4f8b); color: #fff; box-shadow: 0 6px 16px rgba(255, 79, 139, .4); }
+      .sound-opt:focus-visible { outline: 3px solid #e9a34e; outline-offset: 2px; }
+      .hold-btn {
+        position: relative; margin: 2px auto 0; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0;
+        border: 0; background: none; color: #fff1f7; font: inherit; cursor: pointer; touch-action: none;
+        -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+      }
+      .hold-btn:focus-visible { outline: 3px solid #e9a34e; outline-offset: 8px; border-radius: 16px; }
+      .hold-orb {
+        position: relative; width: 104px; height: 104px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .28), rgba(255, 120, 180, .14) 70%);
+        box-shadow: 0 0 calc(18px + var(--p, 0) * 60px) rgba(255, 110, 170, calc(.35 + var(--p, 0) * .55)), inset 0 0 20px rgba(255, 150, 200, .25);
+        transition: transform .2s ease;
+      }
+      .hold-btn.is-holding .hold-orb { transform: scale(calc(1 + var(--p, 0) * .12)); }
+      .hold-ring { position: absolute; left: -4px; top: -4px; width: calc(100% + 8px); height: calc(100% + 8px); transform: rotate(-90deg); }
+      .hold-track { fill: none; stroke: rgba(255, 255, 255, .16); stroke-width: 3; }
+      .hold-prog { fill: none; stroke: url(#holdGrad); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 339.3; stroke-dashoffset: 339.3; }
+      .hold-btn.is-releasing .hold-prog { transition: stroke-dashoffset .4s ease; }
+      .hold-heart { filter: drop-shadow(0 0 8px rgba(255, 100, 160, .8)); animation: icon-beat 1.6s ease-in-out infinite; }
+      .hold-btn.is-holding .hold-heart { animation-duration: .5s; }
+      .hold-text { display: block; text-align: center; font-size: 15px; font-weight: 600; letter-spacing: .24em; text-indent: .24em; }
+      .hold-sub { display: block; margin-top: 6px; font-size: 11px; font-weight: 400; letter-spacing: .12em; text-indent: .12em; color: #d9a9c2; }
+      /* ---------- Progress line + transitions ---------- */
+      .progress { position: fixed; left: 0; right: 0; top: 0; height: 3px; z-index: 70; pointer-events: none; background: rgba(255, 255, 255, .06); transition: opacity 1.6s ease 2.5s; }
+      .progress.is-done { opacity: 0; }
+      .progress i { position: relative; display: block; height: 100%; width: 0; transition: width 1.2s ease; background: linear-gradient(90deg, #ff7ab8, #ffd3a6, #fff3c9); box-shadow: 0 0 12px #ff7ab8; }
+      .progress i::after { content: ""; position: absolute; right: -3px; top: -2px; width: 8px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px 4px #ff9fcb; }
+      .tr-sweep {
+        position: fixed; inset: -10% -30%; z-index: 48; pointer-events: none; mix-blend-mode: screen; transform: translateX(-100%);
+        background: linear-gradient(100deg, transparent 36%, rgba(255, 205, 230, .9) 50%, transparent 64%);
+        animation: tr-sweep .9s ease-in-out forwards;
+      }
+      @keyframes tr-sweep { to { transform: translateX(100%); } }
+      .tr-heart { position: fixed; left: 50%; top: 50%; width: 90px; height: 84px; margin: -42px 0 0 -45px; z-index: 55; pointer-events: none; animation: tr-heart 1.35s ease-in-out forwards; }
+      .tr-heart svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 0 20px #ff7ab8); }
+      @keyframes tr-heart { 0% { transform: scale(.3); opacity: 0; } 22% { opacity: 1; transform: scale(1.2); } 55% { transform: scale(46); opacity: 1; } 75% { transform: scale(46); opacity: 1; } 100% { transform: scale(60); opacity: 0; } }
+      .flash-full { position: fixed; inset: 0; z-index: 58; background: #fff; opacity: 0; pointer-events: none; animation: flash-full .95s ease-out forwards; }
+      @keyframes flash-full { 0% { opacity: 0; } 12% { opacity: .95; } 100% { opacity: 0; } }
+      /* ---------- Parallax ---------- */
+      .tilt {
+        position: absolute; inset: 0; transform-origin: 50% 46%; transition: transform .25s ease-out;
+        transform: perspective(900px) rotateY(calc(var(--px, 0) * 5deg)) rotateX(calc(var(--py, 0) * -4deg)) translate3d(calc(var(--px, 0) * 8px), calc(var(--py, 0) * 6px), 0);
+      }
+      .sky { transform: translate3d(calc(var(--px, 0) * -12px), calc(var(--py, 0) * -9px), 0) scale(1.06); transition: transform .3s ease-out; }
+      @media (prefers-reduced-motion: reduce) {
+        .tilt, .sky { transform: none !important; }
+        .modal-backdrop .night-stars, .first-star, .modal-backdrop .modal, .modal-backdrop .deco-hearts, .hold-heart, .tr-sweep, .tr-heart, .flash-full { animation: none !important; }
+        .first-star { display: none; }
+      }
+      /* ---------- Constellation stage ---------- */
+      .experience { touch-action: none; }
+      .popup.star-mode { left: var(--final-left); top: var(--final-top); transform: scale(.05) rotate(var(--rotation, 0deg)); touch-action: none; }
+      .popup.bloom { animation: popup-bloom .75s cubic-bezier(.3, 1.5, .5, 1) var(--bloom-delay, 0s) forwards; }
+      @keyframes popup-bloom {
+        0% { opacity: 0; transform: scale(.05) rotate(var(--rotation, 0deg)); }
+        55% { opacity: 1; transform: scale(1.2) rotate(var(--rotation, 0deg)); }
+        100% { opacity: 1; transform: scale(1) rotate(var(--rotation, 0deg)); }
+      }
+      .popup::before { animation: none; }
+      .popup::after { animation: none; }
+      .popup.bloom::after { animation: card-ring .9s ease-out calc(var(--bloom-delay, 0s) + .45s) both; }
+      .popup { transition: scale .18s ease, filter .18s ease; }
+      .cards .popup[class].is-peek {
+        z-index: 700 !important; scale: calc(var(--card-scale, 1) * 1.38); filter: brightness(1.18);
+        box-shadow: 0 0 34px rgba(var(--glow), .95), inset 0 0 16px rgba(var(--glow), .3);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .popup.star-mode { opacity: 1; transform: rotate(var(--rotation, 0deg)); }
+        .popup.bloom, .popup.bloom::after { animation: none !important; }
+      }
+      /* ---------- Letter highlights, spotlight question, celebration ---------- */
+      .finale::before {
+        content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity 3.5s ease;
+        background: radial-gradient(ellipse at 50% 105%, rgba(255, 170, 90, .38), transparent 62%), radial-gradient(circle at 50% 20%, rgba(255, 205, 130, .14), transparent 55%);
+      }
+      .finale.is-final::before { opacity: 1; }
+      .finale-title { transition: opacity 1.6s ease; }
+      .finale.closing .finale-title, .finale.closing .finale-again, .finale.closing .photo-wall { opacity: 0; pointer-events: none; }
+      .photo-wall { transition: opacity 1.4s ease; }
+      .paper-text .hl {
+        color: #d4306f; font-weight: 700; font-size: 1.12em; padding: 0 .06em;
+        text-shadow: 0 0 14px rgba(255, 90, 150, .45);
+      }
+      .paper-text .hl.hl-done { animation: hl-pop 1.4s ease; }
+      @keyframes hl-pop {
+        0% { text-shadow: 0 0 0 rgba(255, 90, 150, 0); }
+        35% { text-shadow: 0 0 26px rgba(255, 90, 150, .95), 0 0 52px rgba(255, 150, 200, .7); }
+        100% { text-shadow: 0 0 14px rgba(255, 90, 150, .45); }
+      }
+      .finale-letter::before {
+        content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1.4s ease;
+        background: radial-gradient(circle at 50% 42%, #14081f 0%, #010007 78%);
+      }
+      .finale-letter.is-spot::before { opacity: 1; }
+      .paper.is-away { opacity: 0; transform: translateY(-30px) scale(.94); pointer-events: none; }
+      .spot { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+      .spot[hidden] { display: none; }
+      .spot-cone {
+        position: absolute; left: 50%; top: 0; width: min(120vw, 760px); height: 80%; transform: translateX(-50%);
+        clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%); filter: blur(10px); opacity: 0; pointer-events: none;
+        background: linear-gradient(to bottom, rgba(255, 235, 245, .4), rgba(255, 200, 225, .1) 60%, transparent);
+        animation: cone-on 1.8s ease .3s forwards;
+      }
+      @keyframes cone-on { to { opacity: 1; } }
+      .spot-line {
+        position: relative; min-height: 3em; text-align: center; white-space: pre-line; color: #fff;
+        font-family: "STKaiti", "KaiTi", "Kaiti SC", "Songti SC", serif; font-size: clamp(34px, 9vw, 64px); font-weight: 600; letter-spacing: .14em; line-height: 1.5;
+        text-shadow: 0 0 30px rgba(255, 150, 200, .9), 0 0 80px rgba(255, 100, 170, .6); transition: opacity .8s ease;
+      }
+      .spot-line.is-typing::after { content: "|"; color: #ff9fcb; animation: finale-caret .8s steps(1) infinite; }
+      .spot .ask { position: relative; margin-top: 30px; text-align: center; transition: opacity .8s ease; }
+      .spot .ask h3 { color: #ffd6e8; text-shadow: 0 0 16px rgba(255, 120, 180, .6); }
+      .spot .ask-no { background: rgba(255, 255, 255, .1); color: #f3d6e5; border-color: rgba(255, 255, 255, .3); box-shadow: none; }
+      .spot.is-hush .spot-line, .spot.is-hush .ask { opacity: .3; }
+      .closing {
+        position: fixed; inset: 0; z-index: 7; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+        padding: 24px; text-align: center; pointer-events: none; opacity: 0; transition: opacity 1.4s ease;
+      }
+      .closing[hidden] { display: none; }
+      .closing.is-on { opacity: 1; }
+      .closing-a { font-size: clamp(20px, 5vw, 30px); letter-spacing: .3em; text-indent: .3em; color: #ffe1ee; text-shadow: 0 0 20px rgba(255, 120, 180, .8); }
+      .closing-b {
+        font-size: clamp(24px, 6.4vw, 44px); font-weight: 600; letter-spacing: .12em; line-height: 1.5;
+        background: linear-gradient(90deg, #fff3c9, #ff9fcb, #ffd7a8, #fff3c9); background-size: 300% 100%;
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        filter: drop-shadow(0 0 18px rgba(255, 128, 181, .6)); animation: finale-shine 5s linear infinite;
+      }
+      .closing-date { margin-top: 10px; font-size: 16px; letter-spacing: .4em; text-indent: .4em; color: #ffd9b0; font-variant-numeric: tabular-nums; text-shadow: 0 0 14px rgba(255, 180, 100, .7); }
+      .eternal-heart { display: none; width: 34px; height: 32px; margin: 0 auto 8px; filter: drop-shadow(0 0 8px #ff7ab8) drop-shadow(0 0 22px #ff5c9a); animation: eternal-beat 1.6s ease-in-out infinite; }
+      .eternal-heart svg { display: block; width: 100%; height: 100%; }
+      .finale.is-final .eternal-heart { display: block; }
+      @keyframes eternal-beat { 0%, 100% { transform: scale(1); } 14% { transform: scale(1.14); } 28% { transform: scale(1); } 42% { transform: scale(1.08); } }
+      @media (prefers-reduced-motion: reduce) {
+        .spot-cone, .closing-b, .eternal-heart, .paper-text .hl.hl-done { animation: none !important; }
+        .spot-cone { opacity: 1; }
+      }
+      /* ---------- Photo galaxy ---------- */
+      .finale canvas#finaleFx, .finale canvas#finaleRain { z-index: 6; }
+      .finale canvas.galaxy-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; display: none; pointer-events: auto; touch-action: none; cursor: grab; }
+      .finale.is-galaxy canvas.galaxy-canvas { display: block; }
+      .finale canvas.galaxy-canvas.is-dragging { cursor: grabbing; }
+      .finale canvas.galaxy-canvas.is-pointing { cursor: pointer; }
+      .finale.is-galaxy { overflow: hidden; justify-content: flex-start; padding-top: max(18px, var(--safe-top)); }
+      .finale.is-galaxy .finale-title { position: relative; z-index: 3; }
+      .finale.is-galaxy .finale-title h1 { font-size: clamp(20px, 4.6vw, 30px); margin-top: 6px; }
+      .finale.is-galaxy .finale-title small { display: none; }
+      .finale.is-galaxy .finale-count { margin-top: 6px; font-size: 12px; }
+      .finale.is-galaxy .photo-wall { display: none; }
+      .finale.is-galaxy .finale-again { position: fixed; left: 16px; bottom: var(--safe-bottom); margin: 0; }
+      .view-toggle {
+        position: fixed; left: 50%; bottom: var(--safe-bottom); transform: translateX(-50%); z-index: 4; display: none;
+        font: inherit; font-size: 13px; letter-spacing: .12em; color: #f7dfeb; padding: 9px 18px; cursor: pointer; white-space: nowrap;
+        background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .28); border-radius: 22px; backdrop-filter: blur(6px);
+        box-shadow: 0 0 18px rgba(255, 100, 170, .3); transition: opacity 1.2s ease; touch-action: manipulation;
+      }
+      .finale.is-final .view-toggle:not([hidden]) { display: block; }
+      .view-toggle:focus-visible { outline: 3px solid #e9a34e; outline-offset: 3px; }
+      .finale.closing .view-toggle, .finale.closing .galaxy-tip { opacity: 0; pointer-events: none; }
+      .galaxy-tip {
+        position: fixed; left: 50%; bottom: calc(var(--safe-bottom) + 58px); transform: translateX(-50%); z-index: 4; pointer-events: none;
+        font-size: 12px; letter-spacing: .2em; color: #eab4cd; white-space: nowrap; opacity: 0; transition: opacity 1s ease;
+      }
+      .galaxy-tip.is-on { opacity: .95; }
+      .lightbox.from-galaxy { background: #080410a6; }
     </style>
   </head>
   <body>
+    <div class="progress" id="progress" aria-hidden="true"><i id="progressBar"></i></div>
     <div class="sky" aria-hidden="true">
       <div class="night-stars" id="skyStars"></div>
       <div class="shooting-star"></div>
@@ -934,9 +1121,11 @@
         <strong>这些话，都是给你的</strong>
         <span id="stageHintText">一句一句飞过来，拼成一颗心</span>
       </p>
-      <div id="heartLayer" class="heart-layer">
-        <div id="cards" class="cards"></div>
-        <canvas id="constellation" class="constellation" aria-hidden="true"></canvas>
+      <div id="tilt" class="tilt">
+        <div id="heartLayer" class="heart-layer">
+          <div id="cards" class="cards"></div>
+          <canvas id="constellation" class="constellation" aria-hidden="true"></canvas>
+        </div>
       </div>
     </div>
 
@@ -951,6 +1140,7 @@
       <div class="night-stars" id="nightStars" aria-hidden="true"></div>
       <div class="shooting-star" aria-hidden="true"></div>
       <div class="shooting-star b" aria-hidden="true"></div>
+      <div class="first-star" aria-hidden="true"></div>
       <div class="deco-hearts" aria-hidden="true">
         <span style="--x:8%;--d:0s;--s:16px">💗</span>
         <span style="--x:22%;--d:2.2s;--s:22px">💕</span>
@@ -983,8 +1173,23 @@
         </div>
         <div class="modal-actions">
           <p class="modal-tip" id="modalTip">🎧 戴上耳机，体验更好</p>
-          <button id="confirmBtn" class="btn-primary" type="button">🎵 带声音开启</button>
-          <button id="muteBtn" class="btn-ghost" type="button">静音开启</button>
+          <div class="sound-choice" id="soundChoice" role="radiogroup" aria-label="背景音乐">
+            <button id="confirmBtn" class="sound-opt is-on" type="button" role="radio" aria-checked="true">🎵 带声音</button>
+            <button id="muteBtn" class="sound-opt" type="button" role="radio" aria-checked="false">🔇 静音</button>
+          </div>
+          <button id="holdBtn" class="hold-btn" type="button" aria-label="按住约一点五秒，点亮这颗心（也可以快速点两下）">
+            <span class="hold-orb">
+              <svg class="hold-ring" viewBox="0 0 120 120" aria-hidden="true">
+                <defs><linearGradient id="holdGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c9"/><stop offset=".5" stop-color="#ff9fcb"/><stop offset="1" stop-color="#ff5c9a"/></linearGradient></defs>
+                <circle class="hold-track" cx="60" cy="60" r="54"/>
+                <circle class="hold-prog" id="holdProg" cx="60" cy="60" r="54"/>
+              </svg>
+              <svg class="hold-heart" viewBox="0 0 64 60" width="42" height="40" aria-hidden="true">
+                <path d="M32 56C28 52 4 36 4 19 4 8 18 3 27 12L32 18l5-6C46 3 60 8 60 19c0 17-24 33-28 37Z" fill="url(#mhGrad)"/>
+              </svg>
+            </span>
+            <span class="hold-text"><span id="holdText">按住 · 点亮这颗心</span><small class="hold-sub">长按 1.5 秒 · 或快速点两下</small></span>
+          </button>
         </div>
       </div>
     </div>
@@ -1026,7 +1231,9 @@
     <section id="finale" class="finale" hidden aria-label="告白">
       <canvas id="finaleFx" aria-hidden="true"></canvas>
       <canvas id="finaleRain" aria-hidden="true"></canvas>
+      <canvas id="galaxyCanvas" class="galaxy-canvas" role="img" aria-label="照片星河，可拖动旋转，轻点照片查看"></canvas>
       <div class="finale-title">
+        <span class="eternal-heart" aria-hidden="true"><svg viewBox="0 0 64 60"><path d="M32 56C28 52 4 36 4 19 4 8 18 3 27 12L32 18l5-6C46 3 60 8 60 19c0 17-24 33-28 37Z" fill="url(#mhGrad)"/></svg></span>
         <small id="finaleSmall">2025.08.14 · 遇见你</small>
         <h1 id="finaleH1">怡宝，我喜欢你</h1>
         <p class="finale-count" id="finaleCount" aria-live="off"></p>
@@ -1036,6 +1243,8 @@
         <p class="wall-tip">轻点照片可放大</p>
         <div id="wallGrid" class="wall-grid"></div>
       </section>
+      <p id="galaxyTip" class="galaxy-tip" aria-live="polite"></p>
+      <button id="viewToggle" class="view-toggle" type="button" hidden>✦ 切换星河</button>
       <button id="finaleAgain" class="finale-again" type="button">↺ 再看一遍</button>
 
       <div id="finaleLetter" class="finale-letter" hidden>
@@ -1047,6 +1256,10 @@
         <div id="paper" class="paper" role="document" aria-label="给怡宝的信">
           <p id="paperTip" class="paper-tip">轻点纸张可加速</p>
           <div id="paperText" class="paper-text"></div>
+        </div>
+        <div id="spot" class="spot" hidden>
+          <div class="spot-cone" aria-hidden="true"></div>
+          <p id="spotLine" class="spot-line" aria-live="polite"></p>
           <div id="ask" class="ask" hidden>
             <h3>你的答案是……</h3>
             <div id="askBtns" class="ask-btns">
@@ -1055,6 +1268,11 @@
             </div>
           </div>
         </div>
+      </div>
+      <div id="closing" class="closing" hidden aria-live="polite">
+        <p class="closing-a">怡宝，从今天起</p>
+        <p class="closing-b">每一次日出，都是我们的纪念日</p>
+        <p class="closing-date" id="closingDate"></p>
       </div>
     </section>
 
@@ -1392,7 +1610,7 @@
 
       const startBgm = () => {
         if (!bgm) return;
-        bgm.volume = 0;
+        if (bgm.paused) bgm.volume = 0;
         musicToggle.hidden = false;
         const playPromise = bgm.play();
         const onPlaying = () => {
@@ -1441,7 +1659,7 @@
           letterText.textContent = selectedPhrases[index];
           letterDialog.showModal();
         });
-        popup.className = `popup ${pick(THEMES)} heart-anim ${layout.startLeft < 0 ? "from-left" : "from-right"}`;
+        popup.className = `popup ${pick(THEMES)} star-mode`;
         popup.style.zIndex = String(100 + index);
         popup.style.setProperty("--card-scale", layout.cardScale);
         popup.style.setProperty("--start-left", `${layout.startLeft}px`);
@@ -1483,6 +1701,8 @@
         const size = getPopupSize();
         setHint("先收进心里，再轻轻散开");
         stopConstellation();
+        peekEnabled = false;
+        clearPeek();
         heartLayer.classList.remove("is-beating");
         popups.forEach((popup, index) => {
           setTimeout(() => {
@@ -1511,31 +1731,54 @@
         });
       });
 
+      // Hover / finger-slide over the cards to read one without opening it.
+      let peekEnabled = false;
+      let peeked = null;
+      const clearPeek = () => {
+        if (peeked) { peeked.classList.remove("is-peek"); peeked = null; }
+      };
+      const peekAt = (x, y) => {
+        const el = document.elementFromPoint(x, y);
+        const card = el && el.closest ? el.closest(".popup") : null;
+        if (card === peeked) return;
+        clearPeek();
+        if (card) { peeked = card; card.classList.add("is-peek"); }
+      };
+      document.addEventListener("pointermove", (event) => {
+        if (peekEnabled) peekAt(event.clientX, event.clientY);
+      }, { passive: true });
+
+      // Constellation stage: stars light up and connect into a heart, then bloom into cards.
+      const STAR_MS = 2600;
+      const BLOOM_MS = 2200;
+      const HEART_HOLD_MS = 7000;
       const startHeart = () => {
         selectedPhrases = pickPhrases(getPhraseLimit());
         heartPoints = generateHeartPoints(selectedPhrases.length);
         spawnIndex = 0;
-        setHint("从最上边开始，一句一句拼成心");
+        selectedPhrases.forEach((_, index) => spawnPopup(index));
 
         if (prefersReducedMotion) {
-          selectedPhrases.forEach((_, index) => spawnPopup(index));
           setHint("轻点卡片，读一读我的心意");
+          peekEnabled = true;
           return;
         }
 
-        spawnTimer = setInterval(() => {
-          spawnPopup(spawnIndex);
-          spawnIndex += 1;
-          if (spawnIndex >= selectedPhrases.length) {
-            clearInterval(spawnTimer);
-            spawnTimer = null;
-            setTimeout(() => {
-              heartLayer.classList.add("is-beating");
-              startConstellation();
-            }, TIMING.flyDuration * 0.3 + 250);
-            setTimeout(gatherThenScatter, TIMING.flyDuration + TIMING.heartHold);
-          }
-        }, TIMING.spawnGap);
+        setHint("星星一颗一颗亮起，连成一颗心");
+        startConstellation();
+        const bloomAt = STAR_MS * 0.75;
+        setTimeout(() => {
+          const popups = Array.from(cardsContainer.children);
+          const step = BLOOM_MS / Math.max(1, popups.length);
+          popups.forEach((popup, index) => {
+            popup.style.setProperty("--bloom-delay", `${((index * step) / 1000).toFixed(3)}s`);
+            popup.classList.add("bloom");
+          });
+          setHint("星光化成了心里话 · 划过或轻点卡片读一读");
+          peekEnabled = true;
+        }, bloomAt);
+        setTimeout(() => heartLayer.classList.add("is-beating"), bloomAt + BLOOM_MS);
+        setTimeout(gatherThenScatter, bloomAt + BLOOM_MS + HEART_HOLD_MS);
       };
 
       const giftStage = document.getElementById("giftStage");
@@ -1870,6 +2113,7 @@
           giftStage.hidden = true;
           giftParticles = [];
           giftReplay.hidden = false;
+          playSweep();
           callback();
           giftReplay.focus({ preventScroll: true });
         }, prefersReducedMotion ? 0 : 650);
@@ -1913,37 +2157,262 @@
 
       const muteBtn = document.getElementById("muteBtn");
       const modalTip = document.getElementById("modalTip");
+      const holdBtn = document.getElementById("holdBtn");
+      const holdProg = document.getElementById("holdProg");
+      const holdText = document.getElementById("holdText");
+      const soundChoice = document.getElementById("soundChoice");
+      const progressBar = document.getElementById("progressBar");
+      const progressEl = document.getElementById("progress");
+
+      // ---- progress line ----
+      const PROGRESS_STEPS = [4, 14, 30, 48, 64, 82, 100];
+      const setProgress = (step) => {
+        progressBar.style.width = PROGRESS_STEPS[Math.min(step, PROGRESS_STEPS.length - 1)] + "%";
+        if (step >= 6) progressEl.classList.add("is-done");
+      };
+      setProgress(0);
+
+      // ---- scene transitions ----
+      const playSweep = () => {
+        if (prefersReducedMotion) return;
+        const el = document.createElement("div");
+        el.className = "tr-sweep";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1000);
+      };
+      const heartZoom = (onMid) => {
+        if (prefersReducedMotion) { onMid(); return; }
+        const el = document.createElement("div");
+        el.className = "tr-heart";
+        el.innerHTML = '<svg viewBox="0 0 64 60" aria-hidden="true"><defs><linearGradient id="trGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd1e3"/><stop offset=".6" stop-color="#ff5c9a"/><stop offset="1" stop-color="#b3124f"/></linearGradient></defs><path d="M32 56C28 52 4 36 4 19 4 8 18 3 27 12L32 18l5-6C46 3 60 8 60 19c0 17-24 33-28 37Z" fill="url(#trGrad)"/></svg>';
+        document.body.appendChild(el);
+        setTimeout(onMid, 760);
+        setTimeout(() => el.remove(), 1400);
+      };
+      const fullFlash = () => {
+        if (prefersReducedMotion) return;
+        const el = document.createElement("div");
+        el.className = "flash-full";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1000);
+      };
+
+      // ---- tiny synthesized sound effects (paper rustle, pen ticks, chime) ----
+      const sfx = (() => {
+        let ctx = null;
+        let buf = null;
+        const init = () => {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return;
+          try {
+            if (!ctx) {
+              ctx = new AC();
+              buf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+              const data = buf.getChannelData(0);
+              for (let i = 0; i < data.length; i += 1) data[i] = Math.random() * 2 - 1;
+            }
+            if (ctx.state === "suspended") ctx.resume();
+          } catch (e) { ctx = null; }
+        };
+        const ok = () => ctx && musicEnabled && !document.hidden;
+        const noise = (type, freq, q, attack, decay, gain, offset = 0) => {
+          if (!ok()) return;
+          const t = ctx.currentTime + offset;
+          const src = ctx.createBufferSource();
+          src.buffer = buf; src.loop = true;
+          const filter = ctx.createBiquadFilter();
+          filter.type = type; filter.frequency.value = freq; filter.Q.value = q;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime(gain, t + attack);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay);
+          src.connect(filter); filter.connect(g); g.connect(ctx.destination);
+          src.start(t, Math.random() * 0.5);
+          src.stop(t + attack + decay + 0.05);
+        };
+        const tone = (freq, dur, gain, offset = 0) => {
+          if (!ok()) return;
+          const t = ctx.currentTime + offset;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = "sine"; osc.frequency.value = freq;
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime(gain, t + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          osc.connect(g); g.connect(ctx.destination);
+          osc.start(t); osc.stop(t + dur + 0.05);
+        };
+        return {
+          init,
+          rustle() { for (let i = 0; i < 4; i += 1) noise("bandpass", randomRange(2200, 4200), 0.8, 0.02, randomRange(0.08, 0.2), 0.1, i * 0.11); },
+          tick() { noise("highpass", 5200, 0.7, 0.002, 0.025, 0.05); },
+          chime() { [880, 1318.5, 1760].forEach((f, i) => tone(f, 1.4, 0.05, i * 0.08)); },
+        };
+      })();
+
+      // ---- parallax (mouse on desktop, gyroscope on phones) ----
+      const setParallax = (x, y) => {
+        const root = document.documentElement;
+        root.style.setProperty("--px", Math.max(-1, Math.min(1, x)).toFixed(3));
+        root.style.setProperty("--py", Math.max(-1, Math.min(1, y)).toFixed(3));
+      };
+      window.addEventListener("pointermove", (event) => {
+        if (event.pointerType === "touch" || prefersReducedMotion) return;
+        setParallax((event.clientX / window.innerWidth - 0.5) * 2, (event.clientY / window.innerHeight - 0.5) * 2);
+      }, { passive: true });
+      let gyroOn = false;
+      const enableGyro = async () => {
+        if (gyroOn || prefersReducedMotion || typeof DeviceOrientationEvent === "undefined") return;
+        try {
+          if (typeof DeviceOrientationEvent.requestPermission === "function") {
+            const result = await DeviceOrientationEvent.requestPermission();
+            if (result !== "granted") return;
+          }
+        } catch (e) { return; }
+        gyroOn = true;
+        window.addEventListener("deviceorientation", (event) => {
+          if (event.gamma == null || event.beta == null) return;
+          setParallax(event.gamma / 25, (event.beta - 50) / 25);
+        }, { passive: true });
+      };
+
       const beginExperience = (withSound) => {
         if (hasStarted) return;
         hasStarted = true;
+        holdBtn.disabled = true;
         confirmBtn.disabled = true;
         muteBtn.disabled = true;
         setMusicPref(withSound ? "on" : "off");
+        setProgress(1);
         hideModal();
         if (withSound) startBgm(); else startMuted();
         playGift(() => {
+          setProgress(2);
           createFloatingHearts();
           startHeart();
         });
       };
 
-      // Opening dialog: normally two choices (the last choice is emphasised);
-      // after "再看一遍" it simply repeats the previous choice with one button.
+      // ---- opening dialog: choose sound, then press and hold to light the heart ----
       const lastPref = getMusicPref();
+      let wantSound = lastPref !== "off";
+      const renderChoice = () => {
+        confirmBtn.classList.toggle("is-on", wantSound);
+        muteBtn.classList.toggle("is-on", !wantSound);
+        confirmBtn.setAttribute("aria-checked", String(wantSound));
+        muteBtn.setAttribute("aria-checked", String(!wantSound));
+      };
+      renderChoice();
+      confirmBtn.addEventListener("click", () => { wantSound = true; renderChoice(); });
+      muteBtn.addEventListener("click", () => { wantSound = false; renderChoice(); });
       if (isReplay) {
-        muteBtn.hidden = true;
+        soundChoice.hidden = true;
         modalTip.hidden = true;
-        confirmBtn.textContent = lastPref === "off" ? "↺ 再看一遍 · 静音" : "↺ 再看一遍 · 带声音";
-        confirmBtn.addEventListener("click", () => beginExperience(lastPref !== "off"));
-      } else {
-        const preferMute = lastPref === "off";
-        confirmBtn.classList.toggle("btn-primary", !preferMute);
-        confirmBtn.classList.toggle("btn-ghost", preferMute);
-        muteBtn.classList.toggle("btn-primary", preferMute);
-        muteBtn.classList.toggle("btn-ghost", !preferMute);
-        confirmBtn.addEventListener("click", () => beginExperience(true));
-        muteBtn.addEventListener("click", () => beginExperience(false));
+        holdText.textContent = lastPref === "off" ? "按住 · 再看一遍（静音）" : "按住 · 再看一遍";
       }
+
+      const HOLD_MS = 1500;
+      const RING_LEN = 339.3;
+      let holdActive = false;
+      let holdStart = 0;
+      let holdPressAt = 0;
+      let lastTapAt = 0;
+      let holdRaf = null;
+      let holdPreview = false;
+      const setHold = (p) => {
+        holdProg.style.strokeDashoffset = String(RING_LEN * (1 - p));
+        holdBtn.style.setProperty("--p", p.toFixed(3));
+        modal.style.setProperty("--hp", p.toFixed(3));
+      };
+      const previewMusic = () => {
+        if (!bgm || !wantSound) return;
+        holdPreview = true;
+        bgm.volume = 0;
+        const result = bgm.play();
+        const up = () => fadeBgm(0.35, 1100);
+        if (result && typeof result.then === "function") result.then(up).catch(() => { holdPreview = false; });
+        else up();
+      };
+      const stopPreview = () => {
+        if (!holdPreview) return;
+        holdPreview = false;
+        fadeBgm(0, 250);
+        setTimeout(() => {
+          if (!hasStarted && bgm) { bgm.pause(); try { bgm.currentTime = 0; } catch (e) { /* ignore */ } }
+        }, 280);
+      };
+      const completeHold = () => {
+        if (hasStarted) return;
+        holdActive = false;
+        cancelAnimationFrame(holdRaf);
+        setHold(1);
+        if (navigator.vibrate) navigator.vibrate(24);
+        if (!prefersReducedMotion) {
+          const flash = document.createElement("div");
+          flash.className = "gather-flash";
+          document.body.appendChild(flash);
+          setTimeout(() => flash.remove(), 1100);
+        }
+        modal.classList.add("is-lit");
+        beginExperience(wantSound);
+      };
+      const holdLoop = (now) => {
+        if (!holdActive) return;
+        const p = Math.min((now - holdStart) / HOLD_MS, 1);
+        setHold(p);
+        if (p >= 1) { completeHold(); return; }
+        holdRaf = requestAnimationFrame(holdLoop);
+      };
+      const beginHold = () => {
+        if (hasStarted || holdActive) return;
+        holdActive = true;
+        holdPressAt = performance.now();
+        holdStart = holdPressAt;
+        if (wantSound) sfx.init();
+        enableGyro();
+        previewMusic();
+        if (prefersReducedMotion) { completeHold(); return; }
+        modal.classList.add("is-holding");
+        holdBtn.classList.remove("is-releasing");
+        holdBtn.classList.add("is-holding");
+        holdRaf = requestAnimationFrame(holdLoop);
+      };
+      const cancelHold = () => {
+        if (!holdActive) return;
+        holdActive = false;
+        cancelAnimationFrame(holdRaf);
+        modal.classList.remove("is-holding");
+        holdBtn.classList.remove("is-holding");
+        holdBtn.classList.add("is-releasing");
+        setHold(0);
+        stopPreview();
+      };
+      holdBtn.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        if (holdBtn.setPointerCapture) { try { holdBtn.setPointerCapture(event.pointerId); } catch (e) { /* ignore */ } }
+        beginHold();
+      });
+      const releaseHold = () => {
+        const now = performance.now();
+        const wasQuick = holdActive && now - holdPressAt < 280;
+        if (wasQuick) {
+          // Quick double tap is an accessible alternative to holding.
+          if (now - lastTapAt < 500) { completeHold(); return; }
+          lastTapAt = now;
+        }
+        cancelHold();
+      };
+      holdBtn.addEventListener("pointerup", releaseHold);
+      holdBtn.addEventListener("pointercancel", cancelHold);
+      holdBtn.addEventListener("lostpointercapture", cancelHold);
+      holdBtn.addEventListener("contextmenu", (event) => event.preventDefault());
+      holdBtn.addEventListener("keydown", (event) => {
+        if ((event.key === " " || event.key === "Enter") && !event.repeat) { event.preventDefault(); beginHold(); }
+      });
+      holdBtn.addEventListener("keyup", (event) => {
+        if (event.key === " " || event.key === "Enter") releaseHold();
+      });
+      holdBtn.addEventListener("blur", cancelHold);
 
       musicToggle.addEventListener("click", () => {
         if (!bgm) return;
@@ -2088,8 +2557,9 @@
           new Image().src = photoSrc(PHOTO_FILES[(i + PHOTO_FILES.length) % PHOTO_FILES.length]);
         });
       };
-      const lbOpen = (index, opener) => {
+      const lbOpen = (index, opener, fromGalaxy) => {
         lbOpener = opener || null;
+        lightbox.classList.toggle("from-galaxy", !!fromGalaxy);
         lbShow(index);
         lightbox.hidden = false;
         void lightbox.offsetWidth;
@@ -2101,6 +2571,7 @@
         lightbox.classList.remove("is-on");
         setTimeout(() => { lightbox.hidden = true; lbImg.removeAttribute("src"); }, prefersReducedMotion ? 0 : 300);
         if (lbOpener) lbOpener.focus({ preventScroll: true });
+        if (viewMode === "galaxy") galaxyAfterLightbox();
       };
       document.getElementById("lbClose").addEventListener("click", lbClose);
       document.getElementById("lbPrev").addEventListener("click", () => lbShow(lbIndex - 1));
@@ -2155,6 +2626,446 @@
         wallGrid.appendChild(fragment);
         photoWall.hidden = false;
         wallGrid.querySelectorAll(".wall-item").forEach((item) => (observer ? observer.observe(item) : item.classList.add("is-in")));
+      };
+
+      // ---------- 3D photo galaxy (high-end devices; weak devices fall back to the wall) ----------
+      const galaxyCanvas = document.getElementById("galaxyCanvas");
+      const viewToggle = document.getElementById("viewToggle");
+      const galaxyTip = document.getElementById("galaxyTip");
+      const galaxy = {
+        built: false, failed: false, running: false, frame: null,
+        renderer: null, scene: null, camera: null, group: null, dust: null, photos: [], tmpQ: null,
+        layout: "", baseDist: 80, fly: null, focusIndex: -1, savedZoom: 1, zoom: 1,
+        rotY: 0, rotX: 0, velY: 0, dragging: false, moved: false, idleAt: 0,
+        downX: 0, downY: 0, downT: 0, lastX: 0, lastY: 0, hoverIdx: -1, lastHover: 0,
+        startedAt: 0, lastT: 0, frames: 0, samples: [], level: 0, dustCount: 0, raycaster: null, ndc: null,
+      };
+      let viewMode = "wall";
+      let tipTimer = null;
+      const PHOTO_BASE = 5.4;
+      const HEART_CY = (() => {
+        let lo = Infinity;
+        let hi = -Infinity;
+        for (let i = 0; i <= 90; i += 1) {
+          const y = -heartPointAt((i / 90) * Math.PI * 2).y;
+          lo = Math.min(lo, y); hi = Math.max(hi, y);
+        }
+        return (lo + hi) / 2;
+      })();
+
+      const showGalaxyTip = (text) => {
+        galaxyTip.textContent = text;
+        galaxyTip.classList.add("is-on");
+        clearTimeout(tipTimer);
+        tipTimer = setTimeout(() => galaxyTip.classList.remove("is-on"), 6500);
+      };
+
+      const isLowEndDevice = () => {
+        const mem = navigator.deviceMemory;
+        const cores = navigator.hardwareConcurrency || 4;
+        const small = Math.min(window.innerWidth, window.innerHeight) < 600;
+        if (mem && mem <= 2) return true;
+        if (small && cores <= 4) return true;
+        return false;
+      };
+
+      const galaxyLayoutFor = () => (window.innerWidth / window.innerHeight >= 0.9 ? "heart" : "helix");
+
+      const computePositions = (layout, n) => {
+        const pts = [];
+        if (layout === "helix") {
+          const turns = 2.3, radius = 15, span = 54;
+          for (let i = 0; i < n; i += 1) {
+            const t = i / Math.max(1, n - 1);
+            const a = t * turns * Math.PI * 2 + randomRange(-0.15, 0.15);
+            pts.push({ x: Math.cos(a) * radius, y: (0.5 - t) * span, z: Math.sin(a) * radius });
+          }
+          return pts;
+        }
+        const S = 1.38;
+        for (let i = 0; i < n; i += 1) {
+          let best = null;
+          let bestD = -1;
+          for (let c = 0; c < 60; c += 1) {
+            const hp = heartPointAt(Math.random() * Math.PI * 2);
+            const k = Math.random() < 0.55 ? randomRange(0.84, 1) : Math.sqrt(Math.random()) * 0.78;
+            const p = { x: hp.x * k * S, y: (-hp.y - HEART_CY) * k * S, z: randomRange(-10, 10) };
+            let d = Infinity;
+            for (const q of pts) d = Math.min(d, Math.hypot(p.x - q.x, p.y - q.y, (p.z - q.z) * 0.5));
+            if (d > bestD) { bestD = d; best = p; }
+          }
+          pts.push(best);
+        }
+        return pts;
+      };
+
+      const fillDust = (layout) => {
+        const pos = galaxy.dust.geometry.attributes.position.array;
+        for (let i = 0; i < galaxy.dustCount; i += 1) {
+          if (layout === "helix") {
+            const a = Math.random() * Math.PI * 2;
+            const r = randomRange(6, 28);
+            pos[i * 3] = Math.cos(a) * r; pos[i * 3 + 1] = randomRange(-34, 34); pos[i * 3 + 2] = Math.sin(a) * r;
+          } else {
+            const hp = heartPointAt(Math.random() * Math.PI * 2);
+            const k = Math.random() < 0.5 ? randomRange(0.9, 1.08) : Math.sqrt(Math.random());
+            pos[i * 3] = hp.x * k * 1.38; pos[i * 3 + 1] = (-hp.y - HEART_CY) * k * 1.38; pos[i * 3 + 2] = randomRange(-12, 12);
+          }
+        }
+        galaxy.dust.geometry.attributes.position.needsUpdate = true;
+      };
+
+      const sizePhoto = (ph) => {
+        const a = ph.aspect;
+        const S = PHOTO_BASE * ph.boost;
+        const w = a >= 1 ? S : S * a;
+        const h = a >= 1 ? S / a : S;
+        ph.pic.scale.set(w, h, 1);
+        ph.frame.scale.set(w + 0.45 * ph.boost, h + 0.9 * ph.boost, 1);
+        ph.frame.position.y = -0.22 * ph.boost;
+        ph.h = h;
+      };
+
+      const resizeGalaxy = () => {
+        if (!galaxy.built) return;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const ratio = Math.min(window.devicePixelRatio || 1, galaxy.level >= 1 ? 1 : (w < 600 ? 1.75 : 2));
+        galaxy.renderer.setPixelRatio(ratio);
+        galaxy.renderer.setSize(w, h, false);
+        galaxy.camera.aspect = w / h;
+        galaxy.camera.updateProjectionMatrix();
+        const tan = Math.tan((galaxy.camera.fov * Math.PI) / 360);
+        const aspect = w / h;
+        galaxy.baseDist = galaxy.layout === "helix"
+          ? Math.max(66 / (2 * tan), 42 / (2 * tan * aspect))
+          : Math.max(60 / (2 * tan), 58 / (2 * tan * aspect));
+      };
+
+      const applyLayout = (layout) => {
+        galaxy.layout = layout;
+        const pts = computePositions(layout, galaxy.photos.length);
+        galaxy.photos.forEach((ph, i) => {
+          ph.base = pts[i];
+          ph.boost = layout === "helix" ? 1.5 : 1;
+          sizePhoto(ph);
+        });
+        fillDust(layout);
+        galaxy.group.position.y = layout === "helix" ? 0 : -3;
+        resizeGalaxy();
+      };
+
+      // Photos are downscaled onto a canvas first so 20+ large JPEGs never exhaust GPU memory.
+      const loadGalaxyTexture = (name, maxSide) => new Promise((resolve) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.onload = async () => {
+          try {
+            if (img.decode) { try { await img.decode(); } catch (e) { /* ignore */ } }
+            const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+            const w = Math.max(1, Math.round(img.naturalWidth * scale));
+            const h = Math.max(1, Math.round(img.naturalHeight * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.colorSpace = THREE.SRGBColorSpace;
+            resolve({ tex, aspect: w / h });
+          } catch (e) { resolve(null); }
+        };
+        img.onerror = () => resolve(null);
+        img.src = photoSrc(name);
+      });
+
+      const loadGalaxyTextures = () => {
+        const maxSide = Math.min(window.innerWidth, window.innerHeight) < 600 ? 384 : 640;
+        let next = 0;
+        let active = 0;
+        const pump = () => {
+          while (active < 2 && next < galaxy.photos.length) {
+            const idx = next;
+            next += 1;
+            active += 1;
+            loadGalaxyTexture(PHOTO_FILES[idx], maxSide).then((res) => {
+              active -= 1;
+              if (res) {
+                const ph = galaxy.photos[idx];
+                ph.mat.map = res.tex;
+                ph.mat.color.set(0xffffff);
+                ph.mat.needsUpdate = true;
+                ph.aspect = res.aspect;
+                sizePhoto(ph);
+              }
+              pump();
+            });
+          }
+        };
+        pump();
+      };
+
+      const raycastPhotos = (x, y) => {
+        const rect = galaxyCanvas.getBoundingClientRect();
+        galaxy.ndc.set(((x - rect.left) / rect.width) * 2 - 1, -((y - rect.top) / rect.height) * 2 + 1);
+        galaxy.raycaster.setFromCamera(galaxy.ndc, galaxy.camera);
+        const hits = galaxy.raycaster.intersectObjects(galaxy.photos.map((p) => p.group), true);
+        for (const hit of hits) {
+          let obj = hit.object;
+          while (obj && obj.userData.index === undefined) obj = obj.parent;
+          if (obj) return obj.userData.index;
+        }
+        return -1;
+      };
+
+      const flyCamera = (to, done) => {
+        galaxy.fly = { t0: performance.now(), dur: 850, from: galaxy.camera.position.clone(), to, done };
+      };
+
+      const flyToPhoto = (idx) => {
+        const ph = galaxy.photos[idx];
+        const pos = new THREE.Vector3();
+        ph.group.getWorldPosition(pos);
+        const tan = Math.tan((galaxy.camera.fov * Math.PI) / 360);
+        const dist = Math.max(7, ph.h / tan);
+        galaxy.focusIndex = idx;
+        flyCamera(new THREE.Vector3(pos.x, pos.y, pos.z + dist), () => lbOpen(idx, null, true));
+      };
+
+      const galaxyAfterLightbox = () => {
+        if (!galaxy.running || galaxy.focusIndex < 0) return;
+        flyCamera(new THREE.Vector3(0, 0, galaxy.baseDist * galaxy.zoom), () => { galaxy.focusIndex = -1; galaxy.idleAt = performance.now(); });
+      };
+
+      const setHover = (idx) => {
+        galaxy.hoverIdx = idx;
+        galaxyCanvas.classList.toggle("is-pointing", idx >= 0);
+      };
+
+      const buildGalaxy = () => {
+        const small = Math.min(window.innerWidth, window.innerHeight) < 600;
+        const renderer = new THREE.WebGLRenderer({ canvas: galaxyCanvas, alpha: true, antialias: !small, powerPreference: "high-performance" });
+        renderer.setClearColor(0x000000, 0);
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(55, 1, 0.5, 600);
+        const group = new THREE.Group();
+        scene.add(group);
+        Object.assign(galaxy, { renderer, scene, camera, group, tmpQ: new THREE.Quaternion(),
+          raycaster: new THREE.Raycaster(), ndc: new THREE.Vector2() });
+
+        galaxy.dustCount = small ? 1300 : 3200;
+        const colors = new Float32Array(galaxy.dustCount * 3);
+        const palette = [new THREE.Color(0xffe5ae), new THREE.Color(0xff9dce), new THREE.Color(0xfff4e2), new THREE.Color(0xec7dbe), new THREE.Color(0xc9a6ff)];
+        for (let i = 0; i < galaxy.dustCount; i += 1) {
+          const c = pick(palette);
+          colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+        }
+        const dgeo = new THREE.BufferGeometry();
+        dgeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(galaxy.dustCount * 3), 3));
+        dgeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        const dust = new THREE.Points(dgeo, new THREE.PointsMaterial({
+          size: small ? 1.1 : 0.9, map: makeSpriteTexture("rgba(255,255,255,1)", "rgba(255,255,255,0)"),
+          vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.9,
+        }));
+        dust.frustumCulled = false;
+        group.add(dust);
+        galaxy.dust = dust;
+
+        const planeGeo = new THREE.PlaneGeometry(1, 1);
+        const frameMat = new THREE.MeshBasicMaterial({ color: 0xfff1ea });
+        galaxy.photos = PHOTO_FILES.map((name, index) => {
+          const g = new THREE.Group();
+          const frame = new THREE.Mesh(planeGeo, frameMat);
+          const mat = new THREE.MeshBasicMaterial({ color: 0xf3d9e1 });
+          const pic = new THREE.Mesh(planeGeo, mat);
+          pic.position.z = 0.02;
+          g.add(frame, pic);
+          g.userData.index = index;
+          group.add(g);
+          return { group: g, frame, pic, mat, aspect: 1, boost: 1, base: { x: 0, y: 0, z: 0 }, hover: 0, h: PHOTO_BASE };
+        });
+        galaxy.built = true;
+        applyLayout(galaxyLayoutFor());
+        loadGalaxyTextures();
+
+        // --- interaction: drag to rotate, tap a photo to fly to it, wheel to zoom ---
+        galaxyCanvas.addEventListener("pointerdown", (event) => {
+          if (galaxy.fly || galaxy.focusIndex >= 0) return;
+          galaxy.dragging = true;
+          galaxy.moved = false;
+          galaxy.downX = galaxy.lastX = event.clientX;
+          galaxy.downY = galaxy.lastY = event.clientY;
+          galaxy.downT = performance.now();
+          galaxy.velY = 0;
+          try { galaxyCanvas.setPointerCapture(event.pointerId); } catch (e) { /* ignore */ }
+          galaxyCanvas.classList.add("is-dragging");
+        });
+        galaxyCanvas.addEventListener("pointermove", (event) => {
+          if (galaxy.dragging) {
+            const dx = event.clientX - galaxy.lastX;
+            const dy = event.clientY - galaxy.lastY;
+            galaxy.lastX = event.clientX; galaxy.lastY = event.clientY;
+            if (Math.hypot(event.clientX - galaxy.downX, event.clientY - galaxy.downY) > 6) galaxy.moved = true;
+            galaxy.rotY += dx * 0.006;
+            galaxy.velY = dx * 0.006;
+            galaxy.rotX = Math.max(-0.7, Math.min(0.7, galaxy.rotX + dy * 0.004));
+            galaxy.idleAt = performance.now();
+          } else if (event.pointerType === "mouse" && !galaxy.fly && galaxy.focusIndex < 0) {
+            const now = performance.now();
+            if (now - galaxy.lastHover > 60) {
+              galaxy.lastHover = now;
+              setHover(raycastPhotos(event.clientX, event.clientY));
+            }
+          }
+        });
+        const endDrag = (event, allowPick) => {
+          if (!galaxy.dragging) return;
+          galaxy.dragging = false;
+          galaxyCanvas.classList.remove("is-dragging");
+          galaxy.idleAt = performance.now();
+          if (allowPick && !galaxy.moved && performance.now() - galaxy.downT < 600) {
+            const idx = raycastPhotos(event.clientX, event.clientY);
+            if (idx >= 0) flyToPhoto(idx);
+          }
+        };
+        galaxyCanvas.addEventListener("pointerup", (event) => endDrag(event, true));
+        galaxyCanvas.addEventListener("pointercancel", (event) => endDrag(event, false));
+        galaxyCanvas.addEventListener("pointerleave", () => setHover(-1));
+        galaxyCanvas.addEventListener("wheel", (event) => {
+          event.preventDefault();
+          if (galaxy.focusIndex >= 0) return;
+          galaxy.zoom = Math.min(1.5, Math.max(0.55, galaxy.zoom * (1 + event.deltaY * 0.0012)));
+        }, { passive: false });
+        window.addEventListener("resize", () => {
+          if (!galaxy.running) return;
+          const want = galaxyLayoutFor();
+          if (want !== galaxy.layout) applyLayout(want); else resizeGalaxy();
+        });
+      };
+
+      const lowerGalaxyQuality = () => {
+        galaxy.level = 1;
+        galaxy.dust.geometry.setDrawRange(0, Math.floor(galaxy.dustCount / 2));
+        resizeGalaxy();
+      };
+
+      const renderGalaxy = (now) => {
+        if (!galaxy.running) return;
+        const dtMs = now - galaxy.lastT;
+        const dt = Math.min(dtMs / 1000 || 0.016, 0.05);
+        galaxy.lastT = now;
+        const t = (now - galaxy.startedAt) / 1000;
+
+        // Frame-rate probe: first reduce quality, then give up and show the wall instead.
+        if (t > 3.5 && galaxy.focusIndex < 0) {
+          galaxy.samples.push(dtMs);
+          if (galaxy.samples.length >= 90) {
+            const avg = galaxy.samples.reduce((a, b) => a + b, 0) / galaxy.samples.length;
+            galaxy.samples = [];
+            if (avg > 30 && galaxy.level === 0) lowerGalaxyQuality();
+            else if (avg > 36) { fallbackToWall(); return; }
+          }
+        }
+
+        const idle = now - galaxy.idleAt > 2500 && !galaxy.dragging && !galaxy.fly && galaxy.focusIndex < 0;
+        if (!galaxy.dragging) { galaxy.rotY += galaxy.velY; galaxy.velY *= 0.94; }
+        if (idle) {
+          if (galaxy.layout === "helix") {
+            galaxy.rotY += dt * 0.22;
+          } else {
+            galaxy.rotY = ((galaxy.rotY + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
+            galaxy.rotY += (Math.sin(t * 0.45) * 0.6 - galaxy.rotY) * Math.min(1, dt * 0.8);
+          }
+          galaxy.rotX += (Math.sin(t * 0.3) * 0.08 - galaxy.rotX) * Math.min(1, dt * 0.8);
+        }
+        galaxy.group.rotation.y = galaxy.rotY;
+        galaxy.group.rotation.x = galaxy.rotX;
+
+        const cam = galaxy.camera;
+        if (galaxy.fly) {
+          const f = galaxy.fly;
+          const k = Math.min((now - f.t0) / f.dur, 1);
+          const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+          cam.position.lerpVectors(f.from, f.to, e);
+          if (k >= 1) { galaxy.fly = null; f.done(); }
+        } else if (galaxy.focusIndex < 0) {
+          const entry = Math.min(t / 3, 1);
+          const ease = 1 - Math.pow(1 - entry, 3);
+          const targetZ = galaxy.baseDist * galaxy.zoom * (1 + (1 - ease) * 1.1);
+          cam.position.x += (0 - cam.position.x) * Math.min(1, dt * 6);
+          cam.position.y += (0 - cam.position.y) * Math.min(1, dt * 6);
+          cam.position.z += (targetZ - cam.position.z) * Math.min(1, dt * 6);
+        }
+
+        // photos always face the camera; they pop in one after another and float gently
+        galaxy.tmpQ.copy(galaxy.group.quaternion).invert().multiply(cam.quaternion);
+        galaxy.photos.forEach((ph, i) => {
+          ph.group.quaternion.copy(galaxy.tmpQ);
+          const ap = Math.min(Math.max((t - 0.4 - i * 0.07) / 0.7, 0), 1);
+          const pop = ap === 0 ? 0 : 1 + 2.70158 * Math.pow(ap - 1, 3) + 1.70158 * Math.pow(ap - 1, 2);
+          ph.hover += ((galaxy.hoverIdx === i ? 1 : 0) - ph.hover) * Math.min(1, dt * 10);
+          ph.group.scale.setScalar(Math.max(0.0001, pop) * (1 + ph.hover * 0.14));
+          ph.group.position.set(ph.base.x, ph.base.y + Math.sin(t * 0.9 + i * 1.7) * 0.35, ph.base.z);
+        });
+        galaxy.renderer.render(galaxy.scene, cam);
+        galaxy.frame = requestAnimationFrame(renderGalaxy);
+      };
+
+      const startGalaxy = () => {
+        if (galaxy.failed || !THREE) return false;
+        try {
+          if (!galaxy.built) buildGalaxy();
+        } catch (e) {
+          galaxy.failed = true;
+          return false;
+        }
+        const layout = galaxyLayoutFor();
+        if (layout !== galaxy.layout) applyLayout(layout); else resizeGalaxy();
+        galaxy.running = true;
+        galaxy.focusIndex = -1;
+        galaxy.fly = null;
+        galaxy.startedAt = performance.now();
+        galaxy.lastT = galaxy.startedAt;
+        galaxy.idleAt = galaxy.startedAt;
+        galaxy.frames = 0;
+        galaxy.samples = [];
+        galaxy.camera.position.set(0, 0, galaxy.baseDist * galaxy.zoom * 2.1);
+        galaxy.frame = requestAnimationFrame(renderGalaxy);
+        if (!finale.classList.contains("closing")) showGalaxyTip("拖动旋转 · 轻点照片查看");
+        return true;
+      };
+
+      const stopGalaxy = () => {
+        galaxy.running = false;
+        cancelAnimationFrame(galaxy.frame);
+        setHover(-1);
+      };
+
+      const setView = (mode) => {
+        let next = mode;
+        if (next === "galaxy") {
+          finale.classList.add("is-galaxy");
+          if (!startGalaxy()) { finale.classList.remove("is-galaxy"); next = "wall"; }
+        }
+        if (next === "wall") {
+          stopGalaxy();
+          finale.classList.remove("is-galaxy");
+          buildWall();
+        }
+        viewMode = next;
+        viewToggle.textContent = next === "galaxy" ? "☷ 切换照片墙" : "✦ 切换星河";
+        viewToggle.hidden = galaxy.failed || !THREE;
+        finale.scrollTop = 0;
+      };
+
+      const fallbackToWall = () => {
+        setView("wall");
+        showGalaxyTip("已为你切换到轻量照片墙");
+      };
+
+      viewToggle.addEventListener("click", () => setView(viewMode === "galaxy" ? "wall" : "galaxy"));
+
+      const startPhotoView = () => {
+        const wantGalaxy = !prefersReducedMotion && !!THREE && !isLowEndDevice();
+        setView(wantGalaxy ? "galaxy" : "wall");
       };
 
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -2269,6 +3180,7 @@
       const startFinale = () => {
         if (finaleStarted) return;
         finaleStarted = true;
+        setProgress(3);
         if (bgm && !bgm.paused) fadeBgm(0.85, 3000); // let the music swell a little for the finale
         stageHint.classList.remove("is-visible");
         giftReplay.hidden = true;
@@ -2304,7 +3216,7 @@
 
       // Tap anywhere to launch a firework.
       finale.addEventListener("pointerdown", (event) => {
-        if (!letterLayer.hidden || event.target.closest("button")) return;
+        if (!letterLayer.hidden || event.target.closest("button") || event.target.id === "galaxyCanvas") return;
         fxBurst(event.clientX, event.clientY, Math.random() < 0.5);
       });
       finaleAgain.addEventListener("click", () => {
@@ -2312,40 +3224,122 @@
         location.reload();
       });
 
-      // Typewriter: tapping the paper speeds it up.
+      // ---- the letter: typewriter with highlighted key phrases ----
+      const spot = document.getElementById("spot");
+      const spotLine = document.getElementById("spotLine");
+      const closingEl = document.getElementById("closing");
+      const HIGHLIGHTS = ["我喜欢你", "超级超级喜欢你", "星辰大海", "永远浪漫不息", "入目皆是你", "一见钟情", "纪念日"];
+      const ASK_MARK = "做我女朋友";
+      const askAt = LETTER.lastIndexOf(ASK_MARK);
+      const LETTER_BODY = (askAt > 0 ? LETTER.slice(0, askAt) : LETTER).trimEnd();
+      const ASK_TEXT = askAt > 0 ? LETTER.slice(askAt).trim() : "做我女朋友\n好吗";
+
+      const buildRanges = (text) => {
+        const found = [];
+        HIGHLIGHTS.forEach((phrase) => {
+          let i = text.indexOf(phrase);
+          while (i >= 0) { found.push([i, i + phrase.length]); i = text.indexOf(phrase, i + phrase.length); }
+        });
+        found.sort((x, y) => x[0] - y[0]);
+        const merged = [];
+        found.forEach((range) => {
+          const last = merged[merged.length - 1];
+          if (last && range[0] < last[1]) last[1] = Math.max(last[1], range[1]);
+          else merged.push(range.slice());
+        });
+        return merged;
+      };
+
+      // Tapping the paper speeds the typing up.
       let typeBoost = 1;
       paper.addEventListener("pointerdown", () => { typeBoost = 6; });
       const typeLetter = async () => {
-        if (prefersReducedMotion) { paperText.textContent = LETTER; return; }
-        paperText.classList.add("is-typing");
-        let text = "";
-        for (const ch of LETTER) {
-          text += ch;
-          paperText.textContent = text;
+        const text = LETTER_BODY;
+        const ranges = buildRanges(text);
+        paperText.textContent = "";
+        let plain = document.createTextNode("");
+        paperText.appendChild(plain);
+        let hl = null;
+        let ri = 0;
+        let inHl = false;
+        const endHl = () => {
+          if (hl) hl.classList.add("hl-done");
+          hl = null; inHl = false; ri += 1;
+          plain = document.createTextNode("");
+          paperText.appendChild(plain);
+        };
+        const startHl = () => {
+          hl = document.createElement("span");
+          hl.className = "hl";
+          plain = document.createTextNode("");
+          hl.appendChild(plain);
+          paperText.appendChild(hl);
+          inHl = true;
+          sfx.chime();
+        };
+        if (!prefersReducedMotion) paperText.classList.add("is-typing");
+        for (let i = 0; i < text.length; i += 1) {
+          if (inHl && i >= ranges[ri][1]) endHl();
+          if (!inHl && ri < ranges.length && i >= ranges[ri][0]) startHl();
+          const ch = text[i];
+          plain.appendData(ch);
+          if (prefersReducedMotion) continue;
           paper.scrollTop = paper.scrollHeight;
-          const base = ch === "\n" ? 240 : /[，。 ]/.test(ch) ? 110 : 62;
+          if (ch.trim() && (typeBoost === 1 || i % 3 === 0)) sfx.tick();
+          const base = (ch === "\n" ? 240 : /[，。 ]/.test(ch) ? 110 : 62) * (inHl ? 1.7 : 1);
           await wait(Math.max(8, base / typeBoost));
         }
+        if (inHl) endHl();
         paperText.classList.remove("is-typing");
       };
 
-      openLetterBtn.addEventListener("click", async () => {
+      // ---- the question gets a whole screen with a spotlight ----
+      const typeSpot = async () => {
+        if (prefersReducedMotion) { spotLine.textContent = ASK_TEXT; return; }
+        spotLine.classList.add("is-typing");
+        let text = "";
+        for (const ch of ASK_TEXT) {
+          text += ch;
+          spotLine.textContent = text;
+          if (ch.trim()) sfx.tick();
+          await wait(ch === "\n" ? 700 : 190);
+        }
+        spotLine.classList.remove("is-typing");
+      };
+      const startSpot = async () => {
+        setProgress(5);
+        paperTip.hidden = true;
+        paper.classList.add("is-away");
+        letterLayer.classList.add("is-spot");
+        if (bgm && !bgm.paused) fadeBgm(0.3, 1500);
+        await wait(prefersReducedMotion ? 0 : 1300);
+        spot.hidden = false;
+        await typeSpot();
+        await wait(prefersReducedMotion ? 0 : 500);
+        ask.hidden = false;
+      };
+
+      openLetterBtn.addEventListener("click", () => {
         openLetterBtn.disabled = true;
         preloadPhotos(); // the letter takes a while to type; warm up the photos meanwhile
+        if (musicEnabled) sfx.init();
         finale.classList.remove("show-btn");
-        letterLayer.hidden = false;
-        void letterLayer.offsetWidth;
-        letterLayer.classList.add("is-on");
-        await wait(500);
-        envelope.classList.add("is-open");
-        await wait(1100);
-        envelope.classList.add("is-gone");
-        paper.classList.add("is-on");
-        await wait(900);
-        await typeLetter();
-        paperTip.hidden = true;
-        ask.hidden = false;
-        paper.scrollTo({ top: paper.scrollHeight, behavior: "smooth" });
+        setProgress(4);
+        heartZoom(async () => {
+          letterLayer.hidden = false;
+          void letterLayer.offsetWidth;
+          letterLayer.classList.add("is-on");
+          await wait(prefersReducedMotion ? 0 : 450);
+          envelope.classList.add("is-open");
+          sfx.rustle();
+          await wait(prefersReducedMotion ? 0 : 1100);
+          envelope.classList.add("is-gone");
+          paper.classList.add("is-on");
+          await wait(prefersReducedMotion ? 0 : 900);
+          await typeLetter();
+          await wait(prefersReducedMotion ? 0 : 900);
+          await startSpot();
+        });
       });
 
       // The "再想想" button runs away a few times, then gives in.
@@ -2374,21 +3368,56 @@
       });
       askYes.addEventListener("click", () => acceptAnswer());
 
-      const acceptAnswer = () => {
+      const formatToday = () => {
+        const d = new Date();
+        return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+      };
+
+      // After "我愿意": a held breath, then the screen bursts open.
+      const acceptAnswer = async () => {
         if (accepted) return;
         accepted = true;
+        setProgress(6);
+        askYes.disabled = true;
+        askNo.disabled = true;
+        spot.classList.add("is-hush");
+        if (bgm && !bgm.paused) fadeBgm(0.04, 400);
+        await wait(prefersReducedMotion ? 150 : 1000);
+
+        fullFlash();
+        sfx.chime();
+        if (bgm && !bgm.paused) fadeBgm(0.95, 500);
         letterLayer.classList.remove("is-on");
         setTimeout(() => { letterLayer.hidden = true; }, 700);
-        finale.classList.add("is-final", "show-title");
+        finale.classList.add("is-final", "show-title", "closing");
         finale.classList.remove("show-btn");
         finaleSmall.textContent = "FOREVER & ALWAYS";
         finaleH1.textContent = "把每一次日出都过成纪念日";
         finale.scrollTop = 0;
-        setTimeout(buildWall, prefersReducedMotion ? 0 : 1500);
         tickCount();
         fxRainOn = !prefersReducedMotion;
-        for (let i = 0; i < 7; i += 1) setTimeout(() => (i % 2 ? fxRandomBurst() : fxBurst(fxW / 2, fxH * 0.35, true)), i * 280);
+        for (let i = 0; i < 12; i += 1) {
+          setTimeout(() => (i % 3 === 0 ? fxBurst(fxW / 2, fxH * 0.38, true) : fxRandomBurst()), i * 200);
+        }
         fxAuto = setInterval(() => { if (!document.hidden) fxRandomBurst(); }, 1500);
+        startPhotoView();
+
+        // closing words, then only a small, steady heart remains
+        document.getElementById("closingDate").textContent = formatToday();
+        await wait(prefersReducedMotion ? 300 : 1800);
+        closingEl.hidden = false;
+        void closingEl.offsetWidth;
+        closingEl.classList.add("is-on");
+        await wait(prefersReducedMotion ? 1500 : 5600);
+        closingEl.classList.remove("is-on");
+        await wait(prefersReducedMotion ? 0 : 1400);
+        closingEl.hidden = true;
+        finale.classList.remove("closing");
+        if (viewMode === "galaxy") showGalaxyTip("拖动旋转 · 轻点照片查看");
+        setTimeout(() => {
+          fxRainOn = false;
+          if (fxAuto) { clearInterval(fxAuto); fxAuto = null; }
+        }, 6000);
       };
 
       // ---------- Constellation lines tracing the heart ----------
@@ -2418,7 +3447,7 @@
           });
         }
         const total = constPts.length;
-        const progress = prefersReducedMotion ? 1 : Math.min((now - constStart) / 1800, 1);
+        const progress = prefersReducedMotion ? 1 : Math.min((now - constStart) / STAR_MS, 1);
         const reach = progress * total;
         const pulse = 0.65 + 0.25 * Math.sin((now - constStart) / 260);
         constCtx.clearRect(0, 0, constW, constH);
@@ -2438,9 +3467,10 @@
         for (let i = 0; i < Math.min(Math.floor(reach) + 1, total); i += 1) {
           const p = constPts[i];
           const tw = 0.55 + 0.45 * Math.sin((now - constStart) / 320 + i * 1.7);
-          constCtx.globalAlpha = tw;
+          const pop = Math.max(0, 1 - Math.max(0, reach - i) / 5); // freshly lit stars flare up
+          constCtx.globalAlpha = Math.min(1, tw + pop);
           constCtx.fillStyle = "#fff4e2";
-          constCtx.beginPath(); constCtx.arc(p.x, p.y, 2 + tw, 0, Math.PI * 2); constCtx.fill();
+          constCtx.beginPath(); constCtx.arc(p.x, p.y, 2 + tw + pop * 5, 0, Math.PI * 2); constCtx.fill();
         }
         constCtx.globalAlpha = 1;
         constCtx.globalCompositeOperation = "source-over";
@@ -2486,7 +3516,7 @@
         });
       })();
 
-      (isReplay || getMusicPref() === "on" ? confirmBtn : muteBtn).focus();
+      holdBtn.focus({ preventScroll: true });
     </script>
   </body>
 </html>
