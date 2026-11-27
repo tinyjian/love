@@ -1306,6 +1306,128 @@
         .modal-greet { transition: none; }
         .fx-petals, .fx-trail { display: none; }
       }
+      /* ================= 选礼物页 + 生日礼物 ================= */
+      .gc, .bd { position: fixed; inset: 0; color: #fff; font-family: var(--card-font); -webkit-tap-highlight-color: transparent; }
+      .gc[hidden], .bd[hidden] { display: none !important; }
+      .lightbox { z-index: 300; }
+      .love-back {
+        position: fixed; z-index: 150; top: var(--safe-top); left: max(14px, env(safe-area-inset-left)); font: inherit; font-size: 13px; color: #fff;
+        background: #ffffff1c; border: 1px solid #ffffff3a; border-radius: 999px; padding: 8px 15px; cursor: pointer; backdrop-filter: blur(8px); touch-action: manipulation;
+      }
+      .love-back[hidden] { display: none; }
+      .gc {
+        z-index: 200; display: flex; align-items: center; justify-content: center; overflow: auto;
+        background: radial-gradient(120% 90% at 50% 0%, #3d1048 0%, #1b0727 55%, #0b0214 100%);
+        transition: opacity .65s ease, transform .65s ease, filter .65s ease;
+      }
+      .gc.is-out { opacity: 0; pointer-events: none; transform: scale(1.06); filter: blur(6px); }
+      .gc canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+      .gc-inner { position: relative; z-index: 2; width: min(920px, 100%); margin: auto; padding: 28px 18px; text-align: center; }
+      .gc-kicker { font-size: 12px; letter-spacing: .42em; color: #f6c9dd; opacity: .8; }
+      .gc-title {
+        margin: 12px 0 8px; font-size: clamp(26px, 5.2vw, 44px); font-weight: 700; letter-spacing: .08em;
+        background: linear-gradient(100deg, #fff 10%, #ffd1e6 30%, #ffe9b8 50%, #ffd1e6 70%, #fff 90%); background-size: 250% 100%;
+        -webkit-background-clip: text; background-clip: text; color: transparent; animation: title-flow 6s linear infinite;
+      }
+      .gc-sub { font-size: 14px; color: #e9c5d8; opacity: .8; margin-bottom: 34px; letter-spacing: .14em; }
+      .gc-cards { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; }
+      .gc-card {
+        --c1: #ff6b9c; --glow: #ff6b9c66;
+        position: relative; width: min(330px, 86vw); padding: 34px 22px 28px; border-radius: 26px; border: 0; cursor: pointer;
+        overflow: hidden; text-align: center; color: #fff; font: inherit; isolation: isolate; touch-action: manipulation;
+        transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+        box-shadow: 0 20px 60px #0008; transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, opacity .5s ease;
+        animation: gc-in .9s cubic-bezier(.2,.8,.2,1) both;
+      }
+      .gc-bday { --c1: #ffd27a; --glow: #ffc65a55; animation-delay: .15s; }
+      .gc-card::before {
+        content: ""; position: absolute; inset: -60%; z-index: -2;
+        background: conic-gradient(from 0deg, transparent 0 62%, var(--c1) 84%, transparent 100%); animation: gc-spin 5s linear infinite;
+      }
+      .gc-card::after { content: ""; position: absolute; inset: 1.6px; border-radius: 25px; z-index: -1; background: linear-gradient(160deg, #331044, #1d0a2b); }
+      .gc-card:hover, .gc-card:focus-visible { box-shadow: 0 24px 70px #000a, 0 0 54px var(--glow); outline: none; }
+      .gc-card:focus-visible { outline: 3px solid var(--c1); outline-offset: 4px; }
+      .gc-ico { display: block; font-size: 64px; line-height: 1.2; margin-bottom: 12px; filter: drop-shadow(0 0 18px var(--c1)); animation: gc-bob 3s ease-in-out infinite; }
+      .gc-bday .gc-ico { animation-delay: .6s; }
+      .gc-card b { display: block; font-size: 22px; letter-spacing: .22em; margin-bottom: 10px; }
+      .gc-card small { display: block; font-size: 13px; line-height: 1.7; color: #f4d3e3; opacity: .88; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+      .gc.is-pick .gc-card:not(.is-picked) { opacity: 0; transform: scale(.88); pointer-events: none; }
+      .gc-card.is-picked { transform: scale(1.1); box-shadow: 0 0 90px var(--glow); }
+      @keyframes gc-in { from { opacity: 0; transform: translateY(40px) scale(.92); } }
+      @keyframes gc-spin { to { transform: rotate(360deg); } }
+      @keyframes gc-bob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+      @media (max-height: 720px) { .gc-ico { font-size: 46px; margin-bottom: 6px; } .gc-card { padding: 22px 18px 18px; } .gc-sub { margin-bottom: 20px; } }
+
+      .bd { z-index: 210; overflow: hidden; opacity: 0; transition: opacity .8s ease; touch-action: none;
+        background: radial-gradient(110% 80% at 50% 105%, #4d1459 0%, #210835 45%, #0a0214 100%); }
+      .bd.is-on { opacity: 1; }
+      .bd::before, .bd::after { content: ""; position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%; filter: blur(80px); opacity: .28; pointer-events: none; }
+      .bd::before { left: -25vmax; top: -30vmax; background: #ff4fa0; animation: aurora-a 16s ease-in-out infinite alternate; }
+      .bd::after { right: -25vmax; bottom: -35vmax; background: #7a4dff; animation: aurora-b 20s ease-in-out infinite alternate; }
+      #bdCv { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+      .bd-fade { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .6s ease, transform .6s ease, visibility 0s linear .6s; }
+      .bd-fade.is-on { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .6s ease, transform .6s ease, visibility 0s; }
+      .bd-bar { position: absolute; z-index: 8; top: var(--safe-top); left: max(14px, env(safe-area-inset-left)); right: var(--safe-right); display: flex; justify-content: space-between; pointer-events: none; }
+      .bd-chip { pointer-events: auto; font: inherit; font-size: 13px; color: #ffeaf4; background: #ffffff14; border: 1px solid #ffffff30; border-radius: 999px; padding: 8px 15px; cursor: pointer; backdrop-filter: blur(8px); }
+      .bd-center { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; gap: 16px; }
+      .bd-center:not(.is-on) { transform: translateY(16px) scale(.98); }
+      .bd-kicker { font-size: 12px; letter-spacing: .4em; color: #ffd9ea; opacity: .85; }
+      .bd-h1 {
+        font-size: clamp(36px, 9vw, 72px); font-weight: 800; letter-spacing: .08em; line-height: 1.2;
+        background: linear-gradient(100deg, #fff, #ffc6e0 25%, #ffe7ad 50%, #ffc6e0 75%, #fff); background-size: 250% 100%;
+        -webkit-background-clip: text; background-clip: text; color: transparent; animation: title-flow 5s linear infinite; filter: drop-shadow(0 0 22px #ff6bb066);
+      }
+      .bd-count { font-size: 15px; color: #ffe6f0; letter-spacing: .12em; font-variant-numeric: tabular-nums; padding: 10px 20px; border: 1px solid #ffffff2a; border-radius: 999px; background: #ffffff0e; }
+      .bd-note { margin-top: -6px; font-size: clamp(16px, 4vw, 20px); font-weight: 300; letter-spacing: .38em; text-indent: .38em; color: #ffe2a8; text-shadow: 0 0 18px #ffbf6a66; }
+      .bd-note::before, .bd-note::after { content: "✦"; display: inline-block; margin: 0 .9em; font-size: .6em; vertical-align: .15em; color: #ffd27a; animation: spark-twinkle 2.8s ease-in-out infinite; }
+      .bd-note::after { animation-delay: 1.4s; }
+      .bd-btn {
+        position: relative; overflow: hidden; font: inherit; font-size: 16px; letter-spacing: .14em; color: #fff; padding: 14px 30px; border-radius: 999px; border: 0; cursor: pointer;
+        background: linear-gradient(135deg, #ff8cc0, #ff5c9a 55%, #ff8a5c); box-shadow: 0 8px 34px #ff5c9a77; touch-action: manipulation; user-select: none; -webkit-user-select: none; transition: transform .2s ease;
+      }
+      .bd-btn::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(100deg, transparent, #ffffff66, transparent); transform: skewX(-20deg); animation: btn-shine 3.2s ease-in-out infinite; }
+      .bd-btn:active, .bd-btn.is-hold { transform: scale(.95); }
+      .bd-btn.ghost { background: #ffffff14; border: 1px solid #ffffff38; box-shadow: none; }
+      .bd-hint { position: absolute; z-index: 4; left: 0; right: 0; top: calc(var(--safe-top) + 52px); text-align: center; padding: 0 20px; font-size: clamp(16px, 3.8vw, 22px); letter-spacing: .14em; line-height: 1.8; color: #ffeaf4; text-shadow: 0 0 18px #ff5c9a88; }
+      .bd-hint.is-on { pointer-events: none; }
+      .bd-hint.at-bottom {
+        top: auto; bottom: calc(var(--safe-bottom) + 18px); line-height: 1.5; white-space: nowrap;
+        font-size: clamp(14px, 3.6vw, 20px); letter-spacing: .12em; text-shadow: 0 0 6px #000, 0 0 18px #ff5c9a88;
+      }
+      .bd-hint.at-bottom .bd-whisper { font-size: 1.1em; letter-spacing: .14em; }
+      .bd-hint small { display: block; margin-top: 4px; font-size: 12px; opacity: .72; letter-spacing: .2em; }
+      .bd-hint b { color: #ffd27a; font-size: 1.3em; }
+      .bd-whisper { display: inline-block; font-family: var(--romantic-font); font-size: 1.25em; line-height: 1.7; letter-spacing: .24em; color: #fff3d6; text-shadow: 0 0 22px #ffbf6a99; animation: ask-in 1.2s ease both; }
+      .bd-ctrl, .bd-end { position: absolute; z-index: 6; left: 0; right: 0; bottom: calc(var(--safe-bottom) + 14px); display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 0 16px; }
+      .bd-end.is-on, .bd-ctrl.is-on { pointer-events: none; }
+      .bd-end.is-on > *, .bd-ctrl.is-on > * { pointer-events: auto; }
+      .bd-next { position: absolute; z-index: 6; left: 50%; bottom: calc(var(--safe-bottom) + 18px); translate: -50% 0; }
+      .bd-ringwrap { position: absolute; inset: 0; z-index: 3; perspective: 1100px; perspective-origin: 50% 42%; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; }
+      .bd-ringwrap.is-on { cursor: grab; }
+      .bd-ring { position: absolute; left: 50%; top: 45%; width: var(--iw, 130px); height: var(--ih, 174px); margin: calc(var(--ih, 174px) / -2) 0 0 calc(var(--iw, 130px) / -2); transform-style: preserve-3d; will-change: transform; }
+      .ring-item { position: absolute; inset: 0; padding: 0; border-radius: 10px; overflow: hidden; border: 2px solid #ffffff66; background: #2a0a2e; cursor: pointer; box-shadow: 0 10px 30px #0008, 0 0 26px #ff7ab855; }
+      .ring-item img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+      .bd-ringtitle { position: absolute; left: 0; right: 0; top: calc(var(--safe-top) + 50px); text-align: center; font-size: clamp(20px, 5vw, 30px); letter-spacing: .3em; font-weight: 700; text-shadow: 0 0 24px #ff5c9a; pointer-events: none; }
+      .bd-ringtitle small { display: block; margin-top: 6px; font-size: 12px; letter-spacing: .24em; font-weight: 400; opacity: .7; }
+      .bd-ringcap { position: absolute; left: 0; right: 0; bottom: calc(var(--safe-bottom) + 92px); text-align: center; font-size: 14px; letter-spacing: .24em; color: #ffd9ea; font-variant-numeric: tabular-nums; pointer-events: none; }
+      .bd-letter { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; padding: calc(var(--safe-top) + 40px) 16px calc(var(--safe-bottom) + 76px); }
+      .bd-letter.is-on { pointer-events: none; }
+      .bd-paper {
+        position: relative; pointer-events: auto; width: min(560px, 100%); max-height: 100%; overflow: auto; padding: 30px 28px; border-radius: 20px; scrollbar-width: none; touch-action: pan-y;
+        background: linear-gradient(160deg, #fff8f1f2, #ffe8f1f2); color: #5a2440; border: 1px solid #fff; box-shadow: 0 30px 90px #000a, 0 0 70px #ff7ab855;
+        font-family: "STKaiti", "KaiTi", "Kaiti SC", "Songti SC", "Noto Serif SC", serif; font-size: clamp(16px, 3.8vw, 19px); line-height: 2.05; letter-spacing: .06em;
+      }
+      .bd-paper::-webkit-scrollbar { display: none; }
+      .bd-ptext { white-space: pre-wrap; }
+      .bd-ptext.is-typing::after { content: "|"; margin-left: 2px; color: #e0457f; animation: caret-blink 1s steps(1) infinite; }
+      .bd-ptext .hl { color: #c21f68; font-weight: 700; text-shadow: 0 0 14px #ff7ab855; }
+      .bd-flash { position: absolute; inset: 0; z-index: 9; background: #fff; opacity: 0; pointer-events: none; }
+      .bd-flash.go { animation: flash-full .95s ease-out; }
+      .bd-toast { position: absolute; z-index: 9; left: 50%; top: 42%; translate: -50% 0; max-width: 84vw; padding: 10px 18px; border-radius: 12px; background: #000a; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .4s ease; text-align: center; }
+      .bd-toast.is-on { opacity: 1; }
+      @media (prefers-reduced-motion: reduce) {
+        .gc-card::before, .gc-ico, .bd::before, .bd::after, .bd-btn::after { animation: none !important; }
+      }
     </style>
   </head>
   <body>
@@ -1508,6 +1630,60 @@
       <figure class="lb-fig"><img id="lbImg" alt="" /><figcaption id="lbCap"></figcaption></figure>
       <button id="lbNext" class="lb-btn lb-next" type="button" aria-label="下一张">›</button>
     </div>
+    <section id="gc" class="gc" role="dialog" aria-modal="true" aria-labelledby="gcTitle">
+      <canvas id="gcFx" aria-hidden="true"></canvas>
+      <div class="gc-inner">
+        <p class="gc-kicker">TWO GIFTS · FOR YOU</p>
+        <h1 class="gc-title" id="gcTitle">怡宝，先挑一份礼物吧</h1>
+        <p class="gc-sub">每一份，都是只属于你的</p>
+        <div class="gc-cards">
+          <button id="gcLove" class="gc-card gc-love" type="button">
+            <span class="gc-ico" aria-hidden="true">💝</span><b>爱心礼物</b>
+          </button>
+          <button id="gcBday" class="gc-card gc-bday" type="button">
+            <span class="gc-ico" aria-hidden="true">🎂</span><b>生日礼物</b><small id="gcCount"></small>
+          </button>
+        </div>
+      </div>
+    </section>
+    <script>try{if(sessionStorage.getItem("love:replay")==="1")document.getElementById("gc").hidden=true}catch(e){}</script>
+
+    <button id="loveBack" class="love-back" type="button" hidden>‹ 选礼物</button>
+
+    <section id="bd" class="bd" hidden aria-label="生日礼物">
+      <canvas id="bdCv" aria-hidden="true"></canvas>
+      <div class="bd-bar">
+        <button id="bdBack" class="bd-chip" type="button">‹ 选礼物</button>
+        <button id="bdSnd" class="bd-chip" type="button" aria-label="声音开关">♪</button>
+      </div>
+      <div id="bdIntro" class="bd-center bd-fade">
+        <p class="bd-kicker">A BIRTHDAY GIFT · FOR YOU</p>
+        <h2 class="bd-h1">怡宝<br />生日快乐</h2>
+        <p class="bd-note">愿你永远十八岁</p>
+        <p class="bd-count" id="bdCount"></p>
+        <button id="bdStart" class="bd-btn" type="button">🎂 拿出蛋糕</button>
+      </div>
+      <p id="bdHint" class="bd-hint bd-fade" aria-live="polite"></p>
+      <div id="bdCtrl" class="bd-ctrl bd-fade">
+        <button id="bdBlow" class="bd-btn" type="button">🌬 按住吹气</button>
+      </div>
+      <div id="bdRingWrap" class="bd-ringwrap bd-fade">
+        <div class="bd-ringtitle">时光星环<small>拖动旋转 · 轻点放大</small></div>
+        <div id="bdRing" class="bd-ring"></div>
+        <p id="bdRingCap" class="bd-ringcap"></p>
+      </div>
+      <div id="bdLetter" class="bd-letter bd-fade">
+        <div id="bdPaper" class="bd-paper" role="document" aria-label="生日信"><div id="bdPtext" class="bd-ptext"></div></div>
+      </div>
+      <div id="bdEnd" class="bd-end bd-fade">
+        <button id="bdAgain" class="bd-btn ghost" type="button">🕯 再点一次蜡烛</button>
+        <button id="bdHome" class="bd-btn" type="button">🎁 回到礼物</button>
+      </div>
+      <button id="bdNext" class="bd-btn bd-next bd-fade" type="button"></button>
+      <div id="bdToast" class="bd-toast" aria-live="polite"></div>
+      <div id="bdFlash" class="bd-flash"></div>
+    </section>
+
     <script>
       const phrases = [
         "怡宝，我喜欢你",
@@ -3462,13 +3638,13 @@
       };
 
       const tickCount = () => {
-        const total = Math.max(0, Math.floor((Date.now() - (accepted ? TOGETHER_DATE : MEET_DATE).getTime()) / 1000));
+        const total = Math.max(0, Math.floor((Date.now() - MEET_DATE.getTime()) / 1000));
         const days = Math.floor(total / 86400);
         const pad = (n) => String(n).padStart(2, "0");
         const h = pad(Math.floor((total % 86400) / 3600));
         const m = pad(Math.floor((total % 3600) / 60));
         const s = pad(total % 60);
-        finaleCount.innerHTML = `${accepted ? "我们在一起已经" : "遇见你已经"} <b>${days}</b> 天 ${h} 时 ${m} 分 ${s} 秒`;
+        finaleCount.innerHTML = `遇见你已经 <b>${days}</b> 天 ${h} 时 ${m} 分 ${s} 秒`;
       };
 
       const startFinale = () => {
@@ -3859,7 +4035,7 @@
         const hour = new Date().getHours();
         const hello = hour < 5 ? "夜深了" : hour < 11 ? "早安" : hour < 14 ? "午安" : hour < 18 ? "下午好" : hour < 23 ? "晚上好" : "夜深了";
         const showGreet = () => {
-          greetEl.innerHTML = `${hello}，怡宝<br />今天是我们相识的第 <b>${dayCount(MEET_DATE)}</b> 天 · 相爱的第 <b>${dayCount(TOGETHER_DATE)}</b> 天`;
+          greetEl.innerHTML = `${hello}，怡宝<br />今天是我们相识的第 <b>${dayCount(MEET_DATE)}</b> 天`;
           void greetEl.offsetWidth;
           greetEl.classList.add("is-on");
         };
@@ -4020,6 +4196,872 @@
       })();
 
       holdBtn.focus({ preventScroll: true });
+    </script>
+    <script>
+    (() => {
+      "use strict";
+      const $ = (id) => document.getElementById(id);
+      const gc = $("gc"), bd = $("bd");
+      if (!gc || !bd) return;
+      const gcLove = $("gcLove"), gcBday = $("gcBday"), gcCount = $("gcCount"), bdCount = $("bdCount");
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const low = (navigator.hardwareConcurrency || 4) <= 4;
+      const TAU = Math.PI * 2;
+      const rnd = (a, b) => a + Math.random() * (b - a);
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+      const pad = (n) => String(n).padStart(2, "0");
+      const choice = (arr) => arr[(Math.random() * arr.length) | 0];
+      const midi = (n) => 440 * Math.pow(2, (n - 69) / 12);
+
+      // ---------- 生日倒计时（每年 12 月 5 日；当天显示"今天是你的生日"） ----------
+      const DAY = 864e5;
+      const countText = (long) => {
+        const now = new Date();
+        let t = new Date(now.getFullYear(), 11, 5);
+        if (now - t >= DAY) t = new Date(now.getFullYear() + 1, 11, 5);
+        const d = t - now;
+        if (d <= 0) return "🎉 今天，是你的生日";
+        const days = Math.floor(d / DAY), h = Math.floor((d % DAY) / 36e5), m = Math.floor((d % 36e5) / 6e4), s = Math.floor((d % 6e4) / 1e3);
+        return long ? `距离 12 月 5 日还有 ${days} 天 ${pad(h)} 时 ${pad(m)} 分 ${pad(s)} 秒` : `距生日还有 ${days} 天 ${pad(h)}:${pad(m)}:${pad(s)}`;
+      };
+      const tickCount = () => { gcCount.textContent = countText(false); bdCount.textContent = countText(true); };
+      tickCount();
+      setInterval(tickCount, 1000);
+
+      // ---------- 音频：Web Audio 合成（音乐盒版生日歌 + 音效） ----------
+      const A = {
+        ctx: null, master: null, bus: null, noise: null, wh: null, amb: null, muted: false, lastPop: 0,
+        init() {
+          if (!A.ctx) {
+            const C = window.AudioContext || window.webkitAudioContext;
+            if (!C) return false;
+            const c = (A.ctx = new C());
+            A.master = c.createGain(); A.master.gain.value = A.muted ? 0 : 0.9;
+            const comp = c.createDynamicsCompressor();
+            A.master.connect(comp); comp.connect(c.destination);
+            A.bus = c.createGain(); A.bus.connect(A.master);
+            const dl = c.createDelay(); dl.delayTime.value = 0.23;
+            const fb = c.createGain(); fb.gain.value = 0.28;
+            const wet = c.createGain(); wet.gain.value = 0.3;
+            A.bus.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(A.master);
+            const buf = c.createBuffer(1, c.sampleRate * 2, c.sampleRate);
+            const ch = buf.getChannelData(0);
+            for (let i = 0; i < ch.length; i += 1) ch[i] = Math.random() * 2 - 1;
+            A.noise = buf;
+          }
+          if (A.ctx.state === "suspended") A.ctx.resume();
+          return true;
+        },
+        setMuted(m) {
+          A.muted = m;
+          if (A.ctx) A.master.gain.setTargetAtTime(m ? 0 : 0.9, A.ctx.currentTime, 0.05);
+        },
+        tone(f, t, d, g = 0.18) {
+          if (!A.ctx) return;
+          const c = A.ctx, out = c.createGain();
+          out.gain.setValueAtTime(0.0001, t);
+          out.gain.exponentialRampToValueAtTime(g, t + 0.006);
+          out.gain.exponentialRampToValueAtTime(0.0001, t + d);
+          out.connect(A.bus);
+          [[1, 1, "sine"], [2.01, 0.32, "sine"], [3.98, 0.1, "triangle"]].forEach(([m, a, type]) => {
+            const o = c.createOscillator(), og = c.createGain();
+            o.type = type; o.frequency.value = f * m; og.gain.value = a;
+            o.connect(og); og.connect(out); o.start(t); o.stop(t + d + 0.05);
+          });
+        },
+        noiseBurst(t, d, f0, f1, g, type = "lowpass") {
+          if (!A.ctx) return;
+          const c = A.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), gn = c.createGain();
+          s.buffer = A.noise; f.type = type;
+          f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + d);
+          gn.gain.setValueAtTime(g, t); gn.gain.exponentialRampToValueAtTime(0.0001, t + d);
+          s.connect(f); f.connect(gn); gn.connect(A.bus);
+          s.start(t, Math.random()); s.stop(t + d + 0.05);
+        },
+        now() { return A.ctx ? A.ctx.currentTime : 0; },
+        chime() { if (!A.ctx) return; const t = A.now() + 0.02; [84, 88, 91, 96].forEach((n, i) => A.tone(midi(n), t + i * 0.09, 1.2, 0.07)); },
+        tick(i) { if (!A.ctx) return; const p = [72, 74, 76, 79, 81]; A.tone(midi(p[i % 5] + (i >= 10 ? 12 : 0)), A.now() + 0.01, 0.5, 0.1); },
+        pop() {
+          if (!A.ctx) return;
+          const c = A.ctx, t = A.now() + 0.01;
+          if (t - A.lastPop < 0.06) return;
+          A.lastPop = t;
+          A.noiseBurst(t, 0.5, 2400, 90, 0.5);
+          const o = c.createOscillator(), g = c.createGain();
+          o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.35);
+          g.gain.setValueAtTime(0.45, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+          o.connect(g); g.connect(A.bus); o.start(t); o.stop(t + 0.45);
+          for (let k = 0; k < 5; k += 1) A.noiseBurst(t + 0.14 + k * 0.05 + rnd(0, 0.04), 0.06, 6000, 3000, 0.1, "highpass");
+        },
+        puff() { if (A.ctx) A.noiseBurst(A.now() + 0.01, 0.18, 1400, 300, 0.14); },
+        whoosh(level) {
+          if (!A.ctx) return;
+          if (!A.wh) {
+            const c = A.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), gn = c.createGain();
+            s.buffer = A.noise; s.loop = true; f.type = "bandpass"; f.frequency.value = 700; f.Q.value = 0.6; gn.gain.value = 0;
+            s.connect(f); f.connect(gn); gn.connect(A.master); s.start();
+            A.wh = { gn, f };
+          }
+          const t = A.ctx.currentTime;
+          A.wh.gn.gain.setTargetAtTime(level * 0.28, t, 0.05);
+          A.wh.f.frequency.setTargetAtTime(500 + level * 900, t, 0.05);
+        },
+        hb() {
+          if (!A.ctx) return;
+          const t0 = A.ctx.currentTime + 0.15, b = 0.62;
+          const M = [[67,0,.75],[67,.75,.25],[69,1,1],[67,2,1],[72,3,1],[71,4,2],[67,6,.75],[67,6.75,.25],[69,7,1],[67,8,1],[74,9,1],[72,10,2],
+            [67,12,.75],[67,12.75,.25],[79,13,1],[76,14,1],[72,15,1],[71,16,1],[69,17,1],[77,18,.75],[77,18.75,.25],[76,19,1],[72,20,1],[74,21,1],[72,22,2.4]];
+          M.forEach(([n, s, d]) => A.tone(midi(n), t0 + s * b, Math.max(0.9, d * b * 1.5), 0.17));
+          const C = { C: [48, 52, 55], G: [43, 47, 50], F: [41, 45, 48] };
+          ["C", "G", "G", "C", "C", "F", "F", "C"].forEach((ch, bar) => C[ch].forEach((n, k) => A.tone(midi(n + 12), t0 + (bar * 3 + k) * b, 1.3, 0.09)));
+        },
+        fanfare() {
+          if (!A.ctx) return;
+          const t = A.ctx.currentTime + 0.05;
+          [60, 64, 67, 72, 76, 79, 84, 88].forEach((n, i) => A.tone(midi(n), t + i * 0.085, 1.6, 0.12));
+          [72, 76, 79, 84].forEach((n) => A.tone(midi(n), t + 0.8, 3, 0.08));
+        },
+        ambient(on) {
+          clearInterval(A.amb); A.amb = null;
+          if (!on || !A.ctx) return;
+          const CH = [[60, 64, 67, 72], [57, 60, 64, 69], [53, 57, 60, 65], [55, 59, 62, 67]];
+          const pat = [0, 1, 2, 3, 2, 1, 2, 3];
+          const play = () => {
+            const t0 = A.ctx.currentTime + 0.05;
+            CH.forEach((ch, b) => {
+              pat.forEach((k, s) => A.tone(midi(ch[k]), t0 + b * 2.8 + s * 0.35, 1.4, 0.05));
+              A.tone(midi(ch[0] - 12), t0 + b * 2.8, 2.4, 0.08);
+              A.tone(midi(ch[2] + 12), t0 + b * 2.8 + 1.4, 1.8, 0.04);
+            });
+          };
+          play();
+          A.amb = setInterval(play, 11200);
+        },
+      };
+      document.addEventListener("visibilitychange", () => {
+        if (!A.ctx) return;
+        if (document.hidden) A.ctx.suspend(); else A.ctx.resume();
+      });
+
+      // ---------- 选礼物页 ----------
+      const underNodes = () => Array.from(document.body.children).filter((el) => el !== gc && el !== bd && el.id !== "lightbox" && el.tagName !== "SCRIPT");
+      const setInert = (on) => underNodes().forEach((el) => { if (on) el.setAttribute("inert", ""); else el.removeAttribute("inert"); });
+
+      (() => {
+        const c = $("gcFx"), x = c.getContext("2d");
+        let w = 0, h = 0, last = performance.now(), t = 0;
+        const stars = Array.from({ length: low ? 60 : 110 }, () => ({ x: Math.random(), y: Math.random(), r: rnd(0.5, 1.7), p: rnd(0, TAU), s: rnd(0.6, 2) }));
+        const hearts = Array.from({ length: low ? 10 : 20 }, () => ({ x: Math.random(), y: Math.random(), s: rnd(5, 12), v: rnd(0.025, 0.06), p: rnd(0, TAU), c: Math.random() < 0.5 ? "255,120,170" : "255,214,130" }));
+        const size = () => {
+          const d = Math.min(devicePixelRatio || 1, 1.5);
+          w = innerWidth; h = innerHeight; c.width = Math.round(w * d); c.height = Math.round(h * d); x.setTransform(d, 0, 0, d, 0, 0);
+        };
+        size();
+        window.addEventListener("resize", size);
+        const heart = (px, py, s) => {
+          x.beginPath(); x.moveTo(px, py + s * 0.3);
+          x.bezierCurveTo(px - s, py - s * 0.4, px - s * 0.5, py - s * 1.1, px, py - s * 0.5);
+          x.bezierCurveTo(px + s * 0.5, py - s * 1.1, px + s, py - s * 0.4, px, py + s * 0.3); x.fill();
+        };
+        const frame = (now) => {
+          if (gc.hidden) return;
+          requestAnimationFrame(frame);
+          const dt = Math.min((now - last) / 1000, 0.05); last = now; t += dt;
+          x.clearRect(0, 0, w, h);
+          x.fillStyle = "#fff";
+          stars.forEach((s) => { x.globalAlpha = 0.2 + 0.6 * (Math.sin(t * s.s + s.p) * 0.5 + 0.5); x.fillRect(s.x * w, s.y * h, s.r, s.r); });
+          hearts.forEach((s) => {
+            s.y -= s.v * dt; if (s.y < -0.05) { s.y = 1.05; s.x = Math.random(); }
+            x.globalAlpha = 0.35; x.fillStyle = `rgb(${s.c})`; heart(s.x * w + Math.sin(t + s.p) * 14, s.y * h, s.s);
+          });
+          x.globalAlpha = 1;
+        };
+        requestAnimationFrame(frame);
+      })();
+      [gcLove, gcBday].forEach((card) => {
+        card.addEventListener("pointermove", (e) => {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty("--ry", `${(((e.clientX - r.left) / r.width - 0.5) * 12).toFixed(1)}deg`);
+          card.style.setProperty("--rx", `${((0.5 - (e.clientY - r.top) / r.height) * 12).toFixed(1)}deg`);
+        });
+        card.addEventListener("pointerleave", () => { card.style.setProperty("--rx", "0deg"); card.style.setProperty("--ry", "0deg"); });
+      });
+      const pickGift = (card, onOut) => {
+        gc.classList.add("is-pick"); card.classList.add("is-picked");
+        setTimeout(() => gc.classList.add("is-out"), reduce ? 0 : 380);
+        setTimeout(() => { gc.hidden = true; if (onOut) onOut(); }, reduce ? 0 : 1000);
+      };
+      const loveBack = $("loveBack");
+      loveBack.addEventListener("click", () => location.reload());
+      if (!gc.hidden) { setInert(true); gcLove.focus({ preventScroll: true }); }
+      else loveBack.hidden = false; // 「再看一遍」直接进入爱心礼物时也提供返回
+      gcLove.addEventListener("click", () => {
+        setInert(false);
+        loveBack.hidden = false;
+        pickGift(gcLove, () => { try { holdBtn.focus({ preventScroll: true }); } catch (e) { /* ignore */ } });
+      });
+      gcBday.addEventListener("click", () => {
+        A.init();
+        pickGift(gcBday);
+        setTimeout(openBd, reduce ? 0 : 380);
+      });
+
+      // ---------- 生日礼物引擎 ----------
+      const cv = $("bdCv"), g = cv.getContext("2d");
+      const ui = { intro: $("bdIntro"), hint: $("bdHint"), ctrl: $("bdCtrl"), next: $("bdNext"), ring: $("bdRingWrap"), letter: $("bdLetter"), end: $("bdEnd") };
+      const vis = (el, on) => el.classList.toggle("is-on", !!on);
+      const setHint = (html) => { if (html) ui.hint.innerHTML = html; vis(ui.hint, !!html); };
+      const toastEl = $("bdToast");
+      let toastT = 0;
+      const toast = (msg) => { toastEl.textContent = msg; toastEl.classList.add("is-on"); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove("is-on"), 2600); };
+      const timers = [];
+      let typeTimer = 0;
+      const later = (ms, fn) => { const id = setTimeout(fn, ms); timers.push(id); return id; };
+      const clearTimers = () => { timers.splice(0).forEach(clearTimeout); clearTimeout(typeTimer); };
+
+      let W = 0, H = 0, DPR = 1, SC = 1, CX = 0, BASEY = 0, T = 0, raf = 0, last = 0, bdOpen = false;
+      const G = {};
+      const N = 18;
+      let scene = "idle", phase = "none";
+      let cakeShow = false, cakeT = 0, cakeAlpha = 1, fadeCake = false, litN = 0, outN = 0, blowAcc = 0, blowPow = 0, blowing = false, cakeOff = 0;
+      let dim = 0, dimTarget = 0, wishStars = [], heartPulse = -1;
+      const pm = { x: 0, y: 0, on: false };
+
+      const layout = () => {
+        // 蛋糕从火苗顶到盘底约 354 个单位高；上方给提示文字留 150px，下方给按钮留 90px
+        const top = 150, avail = Math.max(200, H - top - 90);
+        SC = Math.min(W / 560, avail / 354, 1.3);
+        CX = W / 2; BASEY = top + 304 * SC + Math.max(0, (avail - 354 * SC) / 2);
+        G.h1 = 105 * SC; G.rx1 = 215 * SC; G.ry1 = 34 * SC;
+        G.h2 = 92 * SC; G.rx2 = 150 * SC; G.ry2 = 26 * SC;
+        G.yb2 = BASEY - G.h1; G.yt2 = G.yb2 - G.h2;
+        G.crx = G.rx2 * 0.84; G.cry = G.ry2 * 0.8; G.ch = 46 * SC;
+      };
+      const resize = () => {
+        DPR = Math.min(devicePixelRatio || 1, low ? 1.5 : 2);
+        W = innerWidth; H = innerHeight;
+        cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+        g.setTransform(DPR, 0, 0, DPR, 0, 0);
+        layout();
+        if (tpMode === "text" && curText) setText(curText, false);
+      };
+      window.addEventListener("resize", () => { if (bdOpen) resize(); });
+
+      const sprites = {};
+      const glow = (key, rgb) => sprites[key] || (sprites[key] = (() => {
+        const c = document.createElement("canvas"); c.width = c.height = 128;
+        const x = c.getContext("2d"), gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gr.addColorStop(0, `rgba(${rgb},1)`); gr.addColorStop(0.25, `rgba(${rgb},.45)`); gr.addColorStop(1, `rgba(${rgb},0)`);
+        x.fillStyle = gr; x.fillRect(0, 0, 128, 128); return c;
+      })());
+      const drawGlow = (key, rgb, x, y, r, a) => { g.globalAlpha = a; g.drawImage(glow(key, rgb), x - r, y - r, r * 2, r * 2); };
+
+      const stars = Array.from({ length: low ? 70 : 130 }, () => ({ x: Math.random(), y: Math.random(), r: rnd(0.5, 1.8), p: rnd(0, TAU), s: rnd(0.6, 2) }));
+      const PALS = ["255,120,170", "255,210,120", "255,255,255", "190,150,255", "120,220,255", "255,170,120"];
+      const sp = [], rockets = [], confetti = [], smoke = [], winds = [];
+      const MAXSP = low ? 1200 : 2400;
+      const addSpark = (x, y, vx, vy, life, r, col, grav = 160, drag = 2.1) => { if (sp.length < MAXSP) sp.push({ x, y, vx, vy, l: life, ml: life, r, c: col, g: grav, d: drag }); };
+
+      // ----- 烟花 -----
+      const burst = (x, y, kind) => {
+        const R0 = Math.min(W, H) / 38;
+        const col = choice(PALS);
+        if (kind === "heart") {
+          const n = low ? 70 : 110;
+          for (let k = 0; k < n; k += 1) {
+            const t = (k / n) * TAU, hx = 16 * Math.pow(Math.sin(t), 3), hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+            const j = rnd(0.97, 1.03);
+            addSpark(x, y, hx * R0 * j, hy * R0 * j, rnd(1.6, 2.2), 2.2, k % 3 ? "255,120,170" : "255,235,240", 70, 2.1);
+            if (k % 2) addSpark(x, y, hx * R0 * 0.55 * j, hy * R0 * 0.55 * j, rnd(1.4, 1.9), 1.8, "255,214,130", 60, 2.1);
+          }
+        } else if (kind === "ring") {
+          const n = low ? 50 : 80;
+          for (let k = 0; k < n; k += 1) { const a = (k / n) * TAU, v = R0 * 12; addSpark(x, y, Math.cos(a) * v, Math.sin(a) * v, rnd(1.3, 1.8), 2, col, 90, 2.1); }
+        } else if (kind === "willow") {
+          const n = low ? 50 : 90;
+          for (let k = 0; k < n; k += 1) { const a = rnd(0, TAU), v = R0 * rnd(3, 10); addSpark(x, y, Math.cos(a) * v, Math.sin(a) * v, rnd(2.4, 3.4), 1.8, "255,214,130", 80, 1.6); }
+        } else {
+          const n = low ? 60 : 100;
+          for (let k = 0; k < n; k += 1) { const a = rnd(0, TAU), v = R0 * rnd(4, 14); addSpark(x, y, Math.cos(a) * v, Math.sin(a) * v, rnd(1.2, 1.9), 2, k % 4 ? col : "255,255,255", 150, 2.1); }
+        }
+        A.pop();
+      };
+      const launch = (tx, ty, kind) => rockets.push({ sx: tx + rnd(-60, 60), x: 0, y: H + 20, tx, ty, t: 0, dur: rnd(0.8, 1.15), kind });
+      const randomLaunch = () => launch(rnd(W * 0.1, W * 0.9), rnd(H * 0.14, H * 0.46), choice(["peony", "ring", "willow", "heart", "peony"]));
+
+      // ----- 彩带 -----
+      const CCOL = ["#ff7ab8", "#ffd36e", "#ffffff", "#b69cff", "#7fd8ff", "#ff9c7a"];
+      const cannon = (side) => {
+        const n = low ? 45 : 80;
+        for (let i = 0; i < n; i += 1) {
+          if (confetti.length > 260) break;
+          const a = (rnd(52, 86) * Math.PI) / 180, s = rnd(520, 1150) * Math.min(1, Math.max(0.65, H / 800));
+          confetti.push({ x: side < 0 ? W * 0.02 : W * 0.98, y: H * 0.98, vx: Math.cos(a) * s * (side < 0 ? 1 : -1), vy: -Math.sin(a) * s,
+            rot: rnd(0, TAU), vr: rnd(-9, 9), w: rnd(6, 11), h: rnd(10, 18), c: choice(CCOL), fp: rnd(0, TAU), fs: rnd(4, 10) });
+        }
+      };
+
+      // ----- 粒子拼字 -----
+      const PAL = ["#ffd9e8", "#ff9fcb", "#ffe3a3", "#fff6dc", "#ff6fae", "#d7b8ff"];
+      const NP = low ? 1100 : 2400;
+      let TP = [], groups = PAL.map(() => []), tpMode = "off", curText = "";
+      const off = document.createElement("canvas");
+      const initTP = (fx, fy) => {
+        TP = []; groups = PAL.map(() => []);
+        for (let i = 0; i < NP; i += 1) {
+          const p = { x: fx + rnd(-12, 12), y: fy + rnd(-12, 12), vx: rnd(-1, 1) * 520, vy: rnd(-1, 1) * 520 - 260, tx: fx, ty: fy, c: (Math.random() * PAL.length) | 0, s: rnd(1.5, 3), ph: rnd(0, TAU), halo: false };
+          TP.push(p); groups[p.c].push(p);
+        }
+      };
+      const setText = (text, impulse = true) => {
+        curText = text;
+        off.width = W; off.height = H;
+        const o = off.getContext("2d", { willReadFrequently: true });
+        o.clearRect(0, 0, W, H);
+        const lines = text.split("\n");
+        const fam = '"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+        o.font = `800 120px ${fam}`;
+        const wmax = Math.max(...lines.map((l) => o.measureText(l).width));
+        const size = Math.min((120 * W * 0.84) / wmax, (H * 0.36) / lines.length / 1.2, 170);
+        o.font = `800 ${size}px ${fam}`; o.fillStyle = "#fff"; o.textAlign = "center"; o.textBaseline = "middle";
+        const y0 = H * 0.4;
+        lines.forEach((l, i) => o.fillText(l, W / 2, y0 + (i - (lines.length - 1) / 2) * size * 1.2));
+        const data = o.getImageData(0, 0, W, H).data, pts = [], step = 3;
+        for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) if (data[(y * W + x) * 4 + 3] > 128) pts.push(x, y);
+        const cnt = pts.length / 2;
+        if (!cnt) return;
+        TP.forEach((p, i) => {
+          if (cnt >= NP) { const k = Math.floor((i * cnt) / NP) * 2; p.tx = pts[k]; p.ty = pts[k + 1]; p.halo = false; }
+          else if (i < cnt) { p.tx = pts[i * 2]; p.ty = pts[i * 2 + 1]; p.halo = false; }
+          else { const k = ((Math.random() * cnt) | 0) * 2, a = rnd(0, TAU), r = rnd(6, 28); p.tx = pts[k] + Math.cos(a) * r; p.ty = pts[k + 1] + Math.sin(a) * r; p.halo = true; }
+          if (impulse) { p.vx += rnd(-1, 1) * 260; p.vy += rnd(-1, 1) * 260; }
+        });
+      };
+      const seqTexts = () => (W < 640 ? ["HAPPY\nBIRTHDAY", "怡 宝", "12 · 05", "FOREVER\n18", "永远\n十八岁"] : ["HAPPY BIRTHDAY", "怡 宝", "12 · 05", "FOREVER 18", "永远十八岁"]);
+
+      // ----- 蛋糕 -----
+      const CANDLE_COL = ["#ffd1e3", "#fff0b5", "#cfe9ff", "#e8d3ff", "#ffd9b8", "#d3ffe6"];
+      const candles = Array.from({ length: N }, (_, i) => ({ i, ang: (i / N) * TAU + 0.13, lit: false, f: 0, thr: 1, col: CANDLE_COL[i % 6], ph: rnd(0, TAU) }));
+      const order = candles.slice().sort((a, b) => Math.sin(a.ang) - Math.sin(b.ang));
+      const candleBase = (c) => ({ x: CX + G.crx * Math.cos(c.ang), y: G.yt2 + G.cry * Math.sin(c.ang) + cakeOff });
+      const flamePos = (c) => { const b = candleBase(c); return { x: b.x, y: b.y - G.ch - 5 * SC }; };
+      const easeOutBack = (t) => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2);
+
+      const cyl = (x, yb, h, rx, ry, stops, topFill) => {
+        const yt = yb - h, gr = g.createLinearGradient(x - rx, 0, x + rx, 0);
+        stops.forEach(([o, c]) => gr.addColorStop(o, c));
+        g.fillStyle = gr; g.beginPath();
+        g.moveTo(x - rx, yt); g.lineTo(x - rx, yb);
+        g.ellipse(x, yb, rx, ry, 0, Math.PI, 0, true);
+        g.lineTo(x + rx, yt);
+        g.ellipse(x, yt, rx, ry, 0, 0, Math.PI, false);
+        g.closePath(); g.fill();
+        g.fillStyle = topFill; g.beginPath(); g.ellipse(x, yt, rx, ry, 0, 0, TAU); g.fill();
+      };
+      const drips = (x, yt, rx, ry, col, depth, freq) => {
+        g.fillStyle = col; g.beginPath();
+        const steps = 64;
+        for (let k = 0; k <= steps; k += 1) {
+          const th = (Math.PI * k) / steps, bump = Math.pow(Math.max(0, Math.sin(th * freq)), 1.6);
+          const px = x + rx * Math.cos(th), py = yt + ry * Math.sin(th) + 5 * SC + depth * bump;
+          if (k === 0) g.moveTo(px, py); else g.lineTo(px, py);
+        }
+        g.ellipse(x, yt, rx, ry, 0, Math.PI, 0, true);
+        g.closePath(); g.fill();
+      };
+      const heartPath = (x, y, s) => {
+        g.beginPath(); g.moveTo(x, y + s * 0.3);
+        g.bezierCurveTo(x - s, y - s * 0.4, x - s * 0.5, y - s * 1.1, x, y - s * 0.5);
+        g.bezierCurveTo(x + s * 0.5, y - s * 1.1, x + s, y - s * 0.4, x, y + s * 0.3); g.fill();
+      };
+      const drawFlame = (x, y, f, lean, ph) => {
+        const fl = Math.sin(T * 9 + ph) * 0.5 + Math.sin(T * 14.3 + ph * 2.1) * 0.5;
+        const hh = (24 + fl * 3.2) * SC * f * (1 - 0.32 * blowPow), ww = 8.2 * SC * f, lx = lean + fl * 1.4 * SC;
+        g.globalCompositeOperation = "lighter";
+        drawGlow("warm", "255,170,90", x + lx * 0.3, y - hh * 0.5, hh * 2.7, 0.55 * f);
+        g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
+        const shape = (k, col) => {
+          const w2 = ww * k, h2 = hh * k;
+          g.fillStyle = col; g.beginPath(); g.moveTo(x, y);
+          g.bezierCurveTo(x + w2, y - h2 * 0.32, x + w2 * 0.5 + lx * 0.5 * k, y - h2 * 0.78, x + lx * k, y - h2);
+          g.bezierCurveTo(x - w2 * 0.5 + lx * 0.5 * k, y - h2 * 0.78, x - w2, y - h2 * 0.32, x, y); g.fill();
+        };
+        shape(1, "#ff9d2e"); shape(0.68, "#ffd75e"); shape(0.4, "#fff6c8");
+        g.fillStyle = "rgba(130,190,255,.85)"; g.beginPath(); g.ellipse(x, y - 1.5 * SC, 2 * SC * f, 3 * SC * f, 0, 0, TAU); g.fill();
+      };
+      const drawCake = () => {
+        if (!cakeShow || cakeAlpha <= 0.002) return;
+        const e = easeOutBack(clamp(cakeT, 0, 1));
+        cakeOff = (1 - e) * H * 0.6;
+        g.save();
+        g.globalAlpha = cakeAlpha * clamp(cakeT * 2.2, 0, 1);
+        g.translate(0, cakeOff);
+        const baseA = g.globalAlpha;
+        // 光晕 + 阴影 + 盘子
+        g.globalCompositeOperation = "lighter"; drawGlow("pink", "255,100,170", CX, BASEY - 60 * SC, 330 * SC, 0.22 * baseA); g.globalCompositeOperation = "source-over"; g.globalAlpha = baseA;
+        g.fillStyle = "rgba(0,0,0,.35)"; g.beginPath(); g.ellipse(CX, BASEY + 24 * SC, 275 * SC, 34 * SC, 0, 0, TAU); g.fill();
+        const pg = g.createLinearGradient(CX - 255 * SC, 0, CX + 255 * SC, 0);
+        pg.addColorStop(0, "#c9b3d8"); pg.addColorStop(0.4, "#fff"); pg.addColorStop(1, "#bda4cf");
+        g.fillStyle = pg; g.beginPath(); g.ellipse(CX, BASEY + 12 * SC, 255 * SC, 40 * SC, 0, 0, TAU); g.fill();
+        g.fillStyle = "rgba(255,255,255,.65)"; g.beginPath(); g.ellipse(CX, BASEY + 6 * SC, 238 * SC, 33 * SC, 0, 0, TAU); g.fill();
+        // 底层
+        cyl(CX, BASEY, G.h1, G.rx1, G.ry1, [[0, "#d94a85"], [0.25, "#ff7fb3"], [0.45, "#ffa9cc"], [0.72, "#ff6fa6"], [1, "#c93a76"]], "#fff0f6");
+        drips(CX, BASEY - G.h1, G.rx1, G.ry1, "#fff7fb", 20 * SC, 9);
+        for (let k = 0; k < 26; k += 1) {
+          const th = (Math.PI * (k + 0.5)) / 26, px = CX + G.rx1 * Math.cos(th) * 0.99, py = BASEY + G.ry1 * Math.sin(th) - 4 * SC;
+          g.fillStyle = "#ffe6a8"; g.beginPath(); g.arc(px, py, 4.6 * SC, 0, TAU); g.fill();
+          g.fillStyle = "rgba(255,255,255,.85)"; g.beginPath(); g.arc(px - 1.3 * SC, py - 1.4 * SC, 1.5 * SC, 0, TAU); g.fill();
+        }
+        for (let k = 0; k < 7; k += 1) {
+          const th = Math.PI * (0.1 + (0.8 * k) / 6), px = CX + G.rx1 * Math.cos(th), py = BASEY - G.h1 * 0.45 + G.ry1 * Math.sin(th);
+          g.fillStyle = "rgba(255,255,255,.92)"; heartPath(px, py, 9 * SC * (0.55 + 0.45 * Math.sin(th)));
+        }
+        // 上层
+        cyl(CX, G.yb2, G.h2, G.rx2, G.ry2, [[0, "#d9c4e4"], [0.3, "#fff5fb"], [0.5, "#fff"], [0.75, "#f6e1ee"], [1, "#c6a8d6"]], "#fffafc");
+        drips(CX, G.yt2, G.rx2, G.ry2, "#ff9fc8", 24 * SC, 7);
+        g.font = `italic 800 ${54 * SC}px Georgia, "Times New Roman", serif`; g.textAlign = "center"; g.textBaseline = "middle";
+        const tg = g.createLinearGradient(0, G.yt2 + G.ry2 + 24 * SC, 0, G.yb2 + G.ry2);
+        tg.addColorStop(0, "#ffe9a8"); tg.addColorStop(0.5, "#ffc24d"); tg.addColorStop(1, "#d8892a");
+        g.fillStyle = tg; g.shadowColor = "rgba(255,190,80,.7)"; g.shadowBlur = 10 * SC;
+        g.fillText("18", CX, (G.yt2 + G.yb2) / 2 + G.ry2 + 8 * SC);
+        g.shadowBlur = 0;
+        // 蜡烛 + 火苗
+        const wind = blowPow * 15 * SC;
+        order.forEach((c) => {
+          const b = { x: CX + G.crx * Math.cos(c.ang), y: G.yt2 + G.cry * Math.sin(c.ang) };
+          const w = 8.5 * SC;
+          g.globalAlpha = baseA;
+          g.fillStyle = c.col; g.fillRect(b.x - w / 2, b.y - G.ch, w, G.ch);
+          g.fillStyle = "rgba(255,255,255,.55)";
+          for (let k = 0; k < 4; k += 1) g.fillRect(b.x - w / 2, b.y - G.ch + (k * G.ch) / 4 + 2 * SC, w, G.ch / 14);
+          g.fillStyle = "rgba(0,0,0,.18)"; g.fillRect(b.x + w * 0.1, b.y - G.ch, w * 0.4, G.ch);
+          g.fillStyle = "#3b2a2a"; g.fillRect(b.x - 0.7 * SC, b.y - G.ch - 5 * SC, 1.4 * SC, 5 * SC);
+          if (c.f > 0.01) drawFlame(b.x, b.y - G.ch - 5 * SC, c.f, wind * (0.8 + 0.4 * Math.sin(c.ph)) + Math.sin(T * 1.7 + c.ph) * 0.8 * SC, c.ph);
+        });
+        // 整体暖光
+        const lit = candles.reduce((s, c) => s + c.f, 0) / N;
+        if (lit > 0.01) {
+          g.globalCompositeOperation = "lighter";
+          drawGlow("warm", "255,170,90", CX, G.yt2 - 20 * SC, 340 * SC, 0.38 * lit * (0.88 + 0.12 * Math.sin(T * 7)) * baseA);
+          g.globalCompositeOperation = "source-over";
+        }
+        g.restore();
+      };
+
+      // ----- 吹气 / 熄灭 -----
+      const snuff = (c) => {
+        if (!c.lit) return;
+        c.lit = false; outN += 1;
+        const p = flamePos(c);
+        for (let k = 0; k < 5; k += 1) smoke.push({ x: p.x, y: p.y, vx: rnd(8, 28), vy: rnd(-70, -40), r: rnd(5, 9) * SC, l: 0, ml: rnd(1.4, 2.2) });
+        for (let k = 0; k < 4; k += 1) addSpark(p.x, p.y, rnd(-40, 40), rnd(-70, -10), 0.6, 1.4, "255,210,120", 120, 2);
+        A.puff();
+        const t = heartSpot(wishStars.length);
+        wishStars.push({ x0: p.x, y0: p.y, tx: t.x, ty: t.y, t: 0, dur: rnd(1.3, 1.7), sway: rnd(-40, 40) * SC, ph: rnd(0, TAU) });
+        if (outN === 1) { vis(ui.ctrl, false); ui.hint.classList.add("at-bottom"); setHint("每一缕烛光，都会变成一颗星星"); }
+        if (outN >= N) {
+          phase = "done"; blowing = false;
+          later(1900, () => {
+            heartPulse = 0; A.chime();
+            setHint('<span class="bd-whisper">你许的愿望，我都会努力帮你实现</span>');
+          });
+          later(5200, startParty);
+        }
+      };
+      // 18 颗愿望星最终排成的心形位置（蛋糕上方）
+      const heartSpot = (k) => {
+        const flameTop = G.yt2 - G.cry - G.ch - 40 * SC;
+        const s = clamp(Math.min(W, H) * 0.0085, 2, (flameTop - 40) / 30);
+        const cy = flameTop - 17 * s;
+        const t = (k / N) * TAU;
+        return { x: CX + 16 * Math.pow(Math.sin(t), 3) * s, y: cy - (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s };
+      };
+
+      // ----- 流程 -----
+      const resetFx = () => { sp.length = 0; rockets.length = 0; confetti.length = 0; smoke.length = 0; winds.length = 0; };
+      const flash = () => { const f = $("bdFlash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go"); };
+      const showAll = (names, on) => names.forEach((n) => vis(ui[n], on));
+
+      const toCake = () => {
+        clearTimers(); resetFx(); A.ambient(false);
+        wishStars = []; heartPulse = -1; dimTarget = 0;
+        ui.hint.classList.remove("at-bottom");
+        scene = "cake"; phase = "rise"; cakeShow = true; cakeT = 0; cakeAlpha = 1; fadeCake = false; litN = 0; outN = 0; blowAcc = 0; blowPow = 0; blowing = false;
+        tpMode = "off"; TP = []; groups = PAL.map(() => []); curText = "";
+        const ranks = candles.map((_, i) => i).sort(() => Math.random() - 0.5);
+        candles.forEach((c, i) => { c.lit = false; c.f = 0; c.thr = 0.04 + 0.86 * (ranks[i] / (N - 1)); });
+        showAll(["intro", "ctrl", "next", "ring", "letter", "end"], false);
+        setHint("怡宝的蛋糕来啦 🎂");
+        later(1700, () => {
+          phase = "lighting";
+          const lightOne = () => {
+            if (litN >= N) {
+              phase = "wish"; dimTarget = 1; A.hb();
+              setHint('<span class="bd-whisper">闭上眼睛<br />许个愿吧</span>');
+              later(4200, () => {
+                phase = "lit";
+                setHint("许好了，就吹蜡烛吧<small>按住屏幕吹气 · 或点按火苗</small>");
+                vis(ui.ctrl, true);
+              });
+              return;
+            }
+            const c = candles[litN];
+            c.lit = true;
+            const p = flamePos(c);
+            for (let k = 0; k < 6; k += 1) addSpark(p.x, p.y, rnd(-60, 60), rnd(-110, -20), 0.7, 1.5, "255,214,130", 140, 2);
+            A.tick(litN);
+            litN += 1;
+            setHint(`点亮 ${litN} / ${N}<small>永远十八岁</small>`);
+            later(150, lightOne);
+          };
+          lightOne();
+        });
+      };
+
+      const startParty = () => {
+        scene = "party"; phase = "party"; showAll(["ctrl"], false); A.whoosh(0);
+        setHint("");
+        later(700, () => ui.hint.classList.remove("at-bottom"));
+        later(650, () => {
+          dimTarget = 0;
+          wishStars.forEach((w) => { for (let k = 0; k < 10; k += 1) { const a = rnd(0, TAU), v = rnd(60, 220); addSpark(w.tx, w.ty, Math.cos(a) * v, Math.sin(a) * v, rnd(0.8, 1.3), 1.8, "255,220,150", 90, 2); } });
+          wishStars = []; heartPulse = -1;
+        });
+        later(700, () => {
+          flash(); A.fanfare(); cannon(-1); cannon(1);
+          launch(W / 2, H * 0.3, "heart");
+          later(500, () => launch(W * 0.2, H * 0.34, "peony"));
+          later(900, () => launch(W * 0.8, H * 0.32, "peony"));
+          later(1500, () => launch(W * 0.5, H * 0.22, "ring"));
+          later(2000, () => { cannon(-1); cannon(1); });
+        });
+        later(1100, () => { fadeCake = true; });
+        later(1800, () => {
+          initTP(CX, G.yt2 - 20 * SC); tpMode = "text";
+          const texts = seqTexts();
+          const show = (i) => {
+            setText(texts[i], i > 0);
+            if (i > 0) { A.chime(); launch(rnd(W * 0.12, W * 0.88), rnd(H * 0.16, H * 0.3), choice(["peony", "ring", "willow"])); }
+            if (i < texts.length - 1) later(2700, () => show(i + 1));
+            else later(1800, () => {
+              setHint("轻点屏幕放烟花<small>用手指拨动星星</small>");
+              ui.next.textContent = "时光星环 →"; nextMode = "photos"; vis(ui.next, true);
+            });
+          };
+          show(0);
+        });
+      };
+      let nextMode = "photos";
+
+      // ----- 照片星环 -----
+      const ringEl = $("bdRing"), ringCap = $("bdRingCap");
+      let ringBuilt = false, ringRY = 0, ringVel = 0, ringRad = 400, ringN = 1, ringItems = [], frontIdx = -1, dragging = false, dragMoved = false, startX = 0, lastX = 0, lastMoveT = 0, downItem = null;
+      const buildRing = () => {
+        if (ringBuilt) return;
+        ringBuilt = true; ringN = PHOTO_FILES.length;
+        const iw = W < 640 ? 92 : 132, ih = Math.round(iw * 1.34);
+        ringRad = Math.round((iw * 0.56) / Math.tan(Math.PI / ringN));
+        ringEl.style.setProperty("--iw", `${iw}px`); ringEl.style.setProperty("--ih", `${ih}px`);
+        PHOTO_FILES.forEach((name, i) => {
+          const b = document.createElement("button");
+          b.type = "button"; b.className = "ring-item"; b.dataset.i = i;
+          b.style.transform = `rotateY(${(i * 360) / ringN}deg) translateZ(${ringRad}px)`;
+          b.setAttribute("aria-label", `查看 ${photoDate(name)} 的照片`);
+          const im = new Image(); im.src = photoSrc(name); im.alt = ""; im.decoding = "async"; im.draggable = false;
+          b.appendChild(im); ringEl.appendChild(b); ringItems.push(b);
+        });
+      };
+      const updRing = (dt) => {
+        if (!dragging) ringVel += (9 - ringVel) * Math.min(1, dt * 1.6);
+        ringRY += ringVel * dt;
+        ringEl.style.transform = `translateZ(${-ringRad}px) rotateX(-9deg) rotateY(${ringRY.toFixed(2)}deg)`;
+        let best = -2, bi = 0;
+        const stepA = 360 / ringN;
+        for (let i = 0; i < ringN; i += 1) {
+          const f = Math.cos(((i * stepA + ringRY) * Math.PI) / 180);
+          ringItems[i].style.opacity = (0.3 + 0.7 * Math.max(0, (f + 0.15) / 1.15)).toFixed(2);
+          if (f > best) { best = f; bi = i; }
+        }
+        if (bi !== frontIdx) { frontIdx = bi; ringCap.textContent = `${photoDate(PHOTO_FILES[bi])}  ·  ${bi + 1} / ${ringN}`; }
+      };
+      ui.ring.addEventListener("pointerdown", (e) => {
+        dragging = true; dragMoved = false; startX = lastX = e.clientX; lastMoveT = performance.now(); ringVel = 0;
+        downItem = e.target.closest ? e.target.closest(".ring-item") : null;
+        try { ui.ring.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      });
+      ui.ring.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        const now = performance.now(), dx = e.clientX - lastX;
+        lastX = e.clientX;
+        if (Math.abs(e.clientX - startX) > 6) dragMoved = true;
+        const d = dx * 0.32;
+        ringRY += d;
+        ringVel = clamp(ringVel * 0.5 + (d / Math.max((now - lastMoveT) / 1000, 0.008)) * 0.5, -420, 420);
+        lastMoveT = now;
+      });
+      const endDrag = (e) => {
+        if (!dragging) return;
+        dragging = false;
+        if (!dragMoved && e.type === "pointerup") {
+          if (downItem) lbOpen(+downItem.dataset.i, downItem);
+          else burst(e.clientX, e.clientY, choice(["peony", "ring", "heart"]));
+        }
+      };
+      ui.ring.addEventListener("pointerup", endDrag);
+      ui.ring.addEventListener("pointercancel", endDrag);
+
+      const toPhotos = () => {
+        scene = "photos"; tpMode = "free"; curText = "";
+        TP.forEach((p) => { p.vx += rnd(-420, 420); p.vy += rnd(-300, 300); });
+        showAll(["next"], false); setHint("");
+        buildRing(); ringVel = 380; vis(ui.ring, true);
+        A.chime(); A.ambient(true);
+        later(5000, () => { ui.next.textContent = "展开生日信 ✉"; nextMode = "letter"; vis(ui.next, true); });
+      };
+
+      // ----- 生日信 -----
+      const LETTER = `怡宝
+
+生日快乐
+
+今天是十二月五号
+是一年里最该被认真对待的一天
+因为今天
+是你来到这个世界的日子
+
+蜡烛我给你点好了
+火光不大 却足够明亮
+就像你一样
+愿你永远保有少年感
+眼睛里有光 心里有劲
+遇到喜欢的东西会兴奋
+遇到不开心的事 也能很快翻篇
+
+这一年里
+你认真生活的样子
+笑起来的样子
+偶尔小小任性的样子
+我都悄悄记在了心里
+每一个 都是我觉得很珍贵的你
+
+今年的生日愿望
+我替你许了三个
+第一个 愿你平安健康
+第二个 愿你所求皆如愿 所行皆坦途
+第三个 愿你每一天都被好好对待
+不被辜负 不被亏待
+
+至于我
+我没有许愿
+因为今天最好的礼物
+就是你在这里
+
+怡宝
+生日快乐
+永远十八岁
+永远被偏爱`;
+      const paper = $("bdPaper"), ptext = $("bdPtext");
+      let typeIdx = 0, typeFast = false;
+      const finishLetter = () => {
+        ptext.classList.remove("is-typing");
+        ptext.innerHTML = LETTER.split("\n").map((l) => (/生日快乐|永远十八岁|永远被偏爱/.test(l) ? `<span class="hl">${l}</span>` : l)).join("\n");
+        paper.scrollTop = paper.scrollHeight;
+        flash(); A.fanfare(); cannon(-1); cannon(1);
+        launch(W / 2, H * 0.24, "heart");
+        later(600, () => launch(W * 0.18, H * 0.3, "heart"));
+        later(1000, () => launch(W * 0.82, H * 0.3, "heart"));
+        later(1800, () => vis(ui.end, true));
+      };
+      const typeStep = () => {
+        if (scene !== "letter") return;
+        typeIdx = Math.min(LETTER.length, typeIdx + (typeFast ? 3 : 1));
+        const ch = LETTER[typeIdx - 1];
+        ptext.textContent = LETTER.slice(0, typeIdx);
+        paper.scrollTop = paper.scrollHeight;
+        if (typeIdx >= LETTER.length) { finishLetter(); return; }
+        let d = ch === "\n" ? 300 : /[，。！？、]/.test(ch) ? 170 : 66;
+        if (typeFast) d = 18;
+        typeTimer = setTimeout(typeStep, d);
+      };
+      paper.addEventListener("pointerdown", () => { typeFast = true; });
+      const toLetter = () => {
+        scene = "letter"; showAll(["next", "ring"], false);
+        typeIdx = 0; typeFast = false; ptext.textContent = ""; ptext.classList.add("is-typing");
+        vis(ui.letter, true);
+        later(1100, typeStep);
+      };
+
+      // ----- 主循环 -----
+      let fwTimer = 2;
+      const update = (dt) => {
+        if (cakeShow && cakeT < 1) cakeT = Math.min(1, cakeT + dt / 1.6);
+        if (fadeCake) cakeAlpha = Math.max(0, cakeAlpha - dt / 1.5);
+        dim += (dimTarget - dim) * Math.min(1, dt * 1.5);
+        for (const w of wishStars) w.t += dt;
+        if (heartPulse >= 0) heartPulse += dt;
+        for (const c of candles) { c.f += ((c.lit ? 1 : 0) - c.f) * Math.min(1, dt * (c.lit ? 9 : 14)); if (c.f < 0.01) c.f = 0; }
+        if (phase === "lit") {
+          // 一旦吹灭第一根，这阵风就会一直吹到全部熄灭，不会剩下几根
+          const target = blowing || outN > 0 ? 1 : 0;
+          blowPow += (target - blowPow) * Math.min(1, dt * 9);
+          if (blowPow > 0.15) blowAcc += blowPow * dt * 0.6; else blowAcc = Math.max(0, blowAcc - dt * 0.08);
+          for (const c of candles) if (c.lit && blowAcc >= c.thr) snuff(c);
+          A.whoosh(blowPow);
+          if (blowPow > 0.12 && Math.random() < dt * 70 * blowPow) {
+            winds.push({ x: -20, y: G.yt2 - G.ch * 0.6 + rnd(-80, 60) * SC, v: rnd(700, 1100), len: rnd(40, 130), a: rnd(0.15, 0.4), l: 0, ml: 0.9 });
+          }
+        } else if (blowPow > 0.001) { blowPow *= Math.exp(-dt * 6); if (A.wh) A.whoosh(0); }
+        for (let i = winds.length - 1; i >= 0; i -= 1) { const w = winds[i]; w.x += w.v * dt; w.l += dt; if (w.x - w.len > W || w.l > w.ml) winds.splice(i, 1); }
+        for (let i = smoke.length - 1; i >= 0; i -= 1) { const s = smoke[i]; s.l += dt; s.x += s.vx * dt; s.y += s.vy * dt; s.vx += 20 * dt; s.r += 16 * dt * SC; if (s.l > s.ml) smoke.splice(i, 1); }
+        // 火箭
+        for (let i = rockets.length - 1; i >= 0; i -= 1) {
+          const r = rockets[i]; r.t += dt;
+          const p = Math.min(1, r.t / r.dur), e = 1 - (1 - p) * (1 - p);
+          r.x = r.sx + (r.tx - r.sx) * e; r.y = H + 20 + (r.ty - H - 20) * e;
+          addSpark(r.x, r.y, rnd(-15, 15), rnd(30, 80), 0.45, 1.6, "255,220,160", 40, 2);
+          if (p >= 1) { burst(r.tx, r.ty, r.kind); rockets.splice(i, 1); }
+        }
+        for (let i = sp.length - 1; i >= 0; i -= 1) {
+          const s = sp[i]; s.l -= dt;
+          if (s.l <= 0) { sp[i] = sp[sp.length - 1]; sp.pop(); continue; }
+          const k = Math.exp(-s.d * dt); s.vx *= k; s.vy = s.vy * k + s.g * dt; s.x += s.vx * dt; s.y += s.vy * dt;
+        }
+        for (let i = confetti.length - 1; i >= 0; i -= 1) {
+          const c = confetti[i];
+          c.vx *= Math.exp(-0.9 * dt); c.vy = c.vy * Math.exp(-0.5 * dt) + 520 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.rot += c.vr * dt; c.fp += c.fs * dt;
+          if (c.y > H + 30) confetti.splice(i, 1);
+        }
+        // 粒子文字
+        if (tpMode !== "off") {
+          const R = 90, damp = Math.exp((tpMode === "text" ? -6 : -1.2) * dt);
+          for (const p of TP) {
+            if (tpMode === "text") {
+              const tx = p.tx + Math.sin(T * 1.6 + p.ph) * (p.halo ? 3 : 1.1), ty = p.ty + Math.cos(T * 1.3 + p.ph) * (p.halo ? 3 : 1.1);
+              p.vx += (tx - p.x) * 16 * dt; p.vy += (ty - p.y) * 16 * dt;
+            } else { p.vx += Math.sin(T * 0.7 + p.ph) * 20 * dt; p.vy -= 12 * dt; }
+            if (pm.on) {
+              const dx = p.x - pm.x, dy = p.y - pm.y, d2 = dx * dx + dy * dy;
+              if (d2 < R * R) { const d = Math.sqrt(d2) + 0.01, f = (1 - d / R) * 1400 * dt; p.vx += (dx / d) * f; p.vy += (dy / d) * f; }
+            }
+            p.vx *= damp; p.vy *= damp; p.x += p.vx * dt; p.y += p.vy * dt;
+            if (tpMode === "free") { if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; } if (p.x < -10) p.x = W + 10; if (p.x > W + 10) p.x = -10; }
+          }
+        }
+        // 背景自动烟花
+        const amb = scene === "letter" || scene === "photos" || (scene === "party" && tpMode === "text" && ui.next.classList.contains("is-on"));
+        if (amb) { fwTimer -= dt; if (fwTimer <= 0) { randomLaunch(); fwTimer = rnd(2.4, 4.2) * (scene === "photos" ? 1.3 : 1); } }
+        if (scene === "photos") updRing(dt);
+      };
+      const render = () => {
+        g.setTransform(DPR, 0, 0, DPR, 0, 0);
+        g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
+        g.clearRect(0, 0, W, H);
+        g.fillStyle = "#fff";
+        for (const s of stars) { g.globalAlpha = 0.2 + 0.6 * (Math.sin(T * s.s + s.p) * 0.5 + 0.5); g.fillRect(s.x * W, s.y * H, s.r, s.r); }
+        g.globalAlpha = 1;
+        if (dim > 0.01) { g.globalAlpha = dim * 0.6; g.fillStyle = "#06010c"; g.fillRect(0, 0, W, H); g.globalAlpha = 1; }
+        drawCake();
+        if (wishStars.length) {
+          g.globalCompositeOperation = "lighter";
+          const pulse = heartPulse >= 0 ? Math.exp(-heartPulse * 1.6) * Math.max(0, Math.sin(heartPulse * 7)) : 0;
+          if (heartPulse >= 0) {
+            const c = heartSpot(0), b = heartSpot(N / 2);
+            drawGlow("gold", "255,190,120", CX, (c.y + b.y) / 2, Math.abs(b.y - c.y) * (1.1 + pulse * 0.4), 0.18 + pulse * 0.35);
+          }
+          for (const w of wishStars) {
+            const p = clamp(w.t / w.dur, 0, 1), e = 1 - Math.pow(1 - p, 3);
+            const x = w.x0 + (w.tx - w.x0) * e + Math.sin(p * Math.PI) * w.sway, y = w.y0 + (w.ty - w.y0) * e;
+            const tw = 0.75 + 0.25 * Math.sin(T * 5 + w.ph);
+            const r = (6 + 10 * p) * SC * tw * (1 + pulse * 0.8);
+            drawGlow("gold", "255,190,120", x, y, r * 2.2, 0.55 + 0.3 * p);
+            drawGlow("white", "255,250,235", x, y, r * 0.7, 0.95);
+          }
+          g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
+        }
+        if (winds.length) {
+          g.strokeStyle = "#fff"; g.lineWidth = 1.4; g.lineCap = "round";
+          for (const w of winds) { g.globalAlpha = w.a * (1 - w.l / w.ml); g.beginPath(); g.moveTo(w.x - w.len, w.y); g.lineTo(w.x, w.y); g.stroke(); }
+          g.globalAlpha = 1;
+        }
+        for (const s of smoke) { drawGlow("smoke", "232,226,242", s.x, s.y, s.r, 0.34 * (1 - s.l / s.ml)); }
+        g.globalAlpha = 1;
+        if (tpMode !== "off" && TP.length) {
+          g.globalCompositeOperation = "lighter";
+          const al = tpMode === "text" ? 0.92 : 0.5;
+          for (let c = 0; c < PAL.length; c += 1) {
+            const arr = groups[c]; g.fillStyle = PAL[c]; g.globalAlpha = al;
+            for (const p of arr) { const s = p.s * (p.halo ? 0.7 : 1) * (0.8 + 0.25 * Math.sin(T * 4 + p.ph)); g.fillRect(p.x - s / 2, p.y - s / 2, s, s); }
+            g.globalAlpha = al * 0.13;
+            for (const p of arr) { const s = p.s * 4; g.fillRect(p.x - s / 2, p.y - s / 2, s, s); }
+          }
+          g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+        }
+        if (sp.length) {
+          g.globalCompositeOperation = "lighter"; g.lineCap = "round";
+          for (const s of sp) {
+            g.strokeStyle = `rgba(${s.c},${clamp(s.l / s.ml * 1.5, 0, 1).toFixed(2)})`; g.lineWidth = s.r;
+            g.beginPath(); g.moveTo(s.x - s.vx * 0.035, s.y - s.vy * 0.035); g.lineTo(s.x, s.y); g.stroke();
+          }
+          g.globalCompositeOperation = "source-over";
+        }
+        for (const r of rockets) { g.globalCompositeOperation = "lighter"; drawGlow("warm", "255,220,160", r.x, r.y, 10, 0.9); }
+        g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
+        for (const c of confetti) {
+          g.save(); g.translate(c.x, c.y); g.rotate(c.rot); g.scale(1, Math.max(0.15, Math.abs(Math.cos(c.fp))));
+          g.fillStyle = c.c; g.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); g.restore();
+        }
+      };
+      const loop = (now) => {
+        raf = requestAnimationFrame(loop);
+        const dt = Math.min((now - last) / 1000, 0.05); last = now; T += dt;
+        update(dt); render();
+      };
+
+      // ----- 交互 -----
+      cv.addEventListener("pointerdown", (e) => {
+        pm.x = e.clientX; pm.y = e.clientY; pm.on = true;
+        if (scene === "cake" && phase === "lit") {
+          let hit = null, bd2 = Math.pow(26 * SC + 10, 2);
+          for (const c of candles) {
+            if (!c.lit) continue;
+            const p = flamePos(c), d2 = Math.pow(e.clientX - p.x, 2) + Math.pow(e.clientY - (p.y - 10 * SC), 2);
+            if (d2 < bd2) { bd2 = d2; hit = c; }
+          }
+          if (hit) { snuff(hit); return; }
+          blowing = true;
+        } else if (scene === "party" || scene === "photos" || scene === "letter") {
+          burst(e.clientX, e.clientY, choice(["peony", "ring", "heart", "willow"]));
+        }
+      });
+      window.addEventListener("pointermove", (e) => { pm.x = e.clientX; pm.y = e.clientY; pm.on = bdOpen; });
+      const stopBlow = () => { blowing = false; };
+      window.addEventListener("pointerup", stopBlow);
+      window.addEventListener("pointercancel", stopBlow);
+      const blowBtn = $("bdBlow");
+      blowBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); if (phase === "lit") { blowing = true; blowBtn.classList.add("is-hold"); } });
+      ["pointerup", "pointerleave", "pointercancel"].forEach((n) => blowBtn.addEventListener(n, () => { blowing = false; blowBtn.classList.remove("is-hold"); }));
+      blowBtn.addEventListener("keydown", (e) => { if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); if (phase === "lit") blowing = true; } });
+      blowBtn.addEventListener("keyup", (e) => { if (e.key === " " || e.key === "Enter") blowing = false; });
+      $("bdStart").addEventListener("click", () => { A.init(); A.chime(); toCake(); });
+      ui.next.addEventListener("click", () => { A.init(); if (nextMode === "photos") toPhotos(); else toLetter(); });
+      $("bdAgain").addEventListener("click", () => { A.init(); showAll(["end", "letter", "ring"], false); toCake(); });
+      $("bdHome").addEventListener("click", () => location.reload());
+      $("bdBack").addEventListener("click", () => location.reload());
+      $("bdSnd").addEventListener("click", () => { A.setMuted(!A.muted); $("bdSnd").textContent = A.muted ? "🔇" : "♪"; });
+
+      function openBd() {
+        bd.hidden = false; bdOpen = true;
+        resize();
+        void bd.offsetWidth;
+        bd.classList.add("is-on");
+        scene = "intro"; phase = "none";
+        vis(ui.intro, true);
+        A.init(); A.chime();
+        last = performance.now();
+        if (!raf) raf = requestAnimationFrame(loop);
+        later(600, () => $("bdStart").focus({ preventScroll: true }));
+      }
+    })();
     </script>
   </body>
 </html>
