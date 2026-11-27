@@ -1686,6 +1686,7 @@
       <button id="bdNext" class="bd-btn bd-next bd-fade" type="button"></button>
       <div id="bdToast" class="bd-toast" aria-live="polite"></div>
       <div id="bdFlash" class="bd-flash"></div>
+      <audio id="bdBgm" src="./assets/birthday.mp3" preload="auto" loop hidden></audio>
     </section>
 
     <script>
@@ -4260,13 +4261,13 @@
           A.muted = m;
           if (A.ctx) A.master.gain.setTargetAtTime(m ? 0 : 0.9, A.ctx.currentTime, 0.05);
         },
-        tone(f, t, d, g = 0.18) {
+        tone(f, t, d, g = 0.18, dest = A.bus, atk = 0.006) {
           if (!A.ctx) return;
           const c = A.ctx, out = c.createGain();
           out.gain.setValueAtTime(0.0001, t);
-          out.gain.exponentialRampToValueAtTime(g, t + 0.006);
+          out.gain.exponentialRampToValueAtTime(g, t + atk);
           out.gain.exponentialRampToValueAtTime(0.0001, t + d);
-          out.connect(A.bus);
+          out.connect(dest);
           [[1, 1, "sine"], [2.01, 0.32, "sine"], [3.98, 0.1, "triangle"]].forEach(([m, a, type]) => {
             const o = c.createOscillator(), og = c.createGain();
             o.type = type; o.frequency.value = f * m; og.gain.value = a;
@@ -4310,15 +4311,6 @@
           A.wh.gn.gain.setTargetAtTime(level * 0.28, t, 0.05);
           A.wh.f.frequency.setTargetAtTime(500 + level * 900, t, 0.05);
         },
-        hb() {
-          if (!A.ctx) return;
-          const t0 = A.ctx.currentTime + 0.15, b = 0.62;
-          const M = [[67,0,.75],[67,.75,.25],[69,1,1],[67,2,1],[72,3,1],[71,4,2],[67,6,.75],[67,6.75,.25],[69,7,1],[67,8,1],[74,9,1],[72,10,2],
-            [67,12,.75],[67,12.75,.25],[79,13,1],[76,14,1],[72,15,1],[71,16,1],[69,17,1],[77,18,.75],[77,18.75,.25],[76,19,1],[72,20,1],[74,21,1],[72,22,2.4]];
-          M.forEach(([n, s, d]) => A.tone(midi(n), t0 + s * b, Math.max(0.9, d * b * 1.5), 0.17));
-          const C = { C: [48, 52, 55], G: [43, 47, 50], F: [41, 45, 48] };
-          ["C", "G", "G", "C", "C", "F", "F", "C"].forEach((ch, bar) => C[ch].forEach((n, k) => A.tone(midi(n + 12), t0 + (bar * 3 + k) * b, 1.3, 0.09)));
-        },
         fanfare() {
           if (!A.ctx) return;
           const t = A.ctx.currentTime + 0.05;
@@ -4327,25 +4319,71 @@
         },
         ambient(on) {
           clearInterval(A.amb); A.amb = null;
+          if (A.ambG) {
+            const old = A.ambG;
+            old.gain.setTargetAtTime(0.0001, A.ctx.currentTime, 0.3);
+            setTimeout(() => old.disconnect(), 2500);
+            A.ambG = null;
+          }
           if (!on || !A.ctx) return;
-          const CH = [[60, 64, 67, 72], [57, 60, 64, 69], [53, 57, 60, 65], [55, 59, 62, 67]];
-          const pat = [0, 1, 2, 3, 2, 1, 2, 3];
+          const g = A.ctx.createGain();
+          g.gain.setValueAtTime(0.0001, A.ctx.currentTime);
+          g.gain.setTargetAtTime(1, A.ctx.currentTime, 1.2);
+          g.connect(A.bus); A.ambG = g;
+          const CH = [[60, 64, 67, 71], [57, 60, 64, 67], [53, 57, 60, 64], [55, 59, 62, 69]], BAR = 4.8;
           const play = () => {
             const t0 = A.ctx.currentTime + 0.05;
             CH.forEach((ch, b) => {
-              pat.forEach((k, s) => A.tone(midi(ch[k]), t0 + b * 2.8 + s * 0.35, 1.4, 0.05));
-              A.tone(midi(ch[0] - 12), t0 + b * 2.8, 2.4, 0.08);
-              A.tone(midi(ch[2] + 12), t0 + b * 2.8 + 1.4, 1.8, 0.04);
+              const tb = t0 + b * BAR;
+              A.tone(midi(ch[0] - 12), tb, BAR + 1.2, 0.05, g, 1.2);
+              [1, 2, 3].forEach((k, s) => A.tone(midi(ch[k]), tb + 0.3 + s * 0.12, BAR, 0.018, g, 1.5));
+              A.tone(midi(ch[rnd(1, 4) | 0] + 12), tb + rnd(1.2, 3.6), 2.6, 0.022, g, 0.02);
             });
           };
           play();
-          A.amb = setInterval(play, 11200);
+          A.amb = setInterval(play, CH.length * BAR * 1000);
         },
       };
       document.addEventListener("visibilitychange", () => {
         if (!A.ctx) return;
         if (document.hidden) A.ctx.suspend(); else A.ctx.resume();
+        if (document.hidden) bgm.el.pause(); else if (bgm.wanted) bgm.el.play().catch(() => {});
       });
+
+      // 吹完蜡烛后的生日歌（assets/birthday.mp3，Wikimedia Commons 公有领域录音）
+      const bgm = {
+        el: $("bdBgm"), wanted: false, fade: 0, VOL: 0.7,
+        ramp(to, ms, done) {
+          clearInterval(bgm.fade);
+          const from = bgm.el.volume, t0 = performance.now();
+          bgm.fade = setInterval(() => {
+            const k = Math.min(1, (performance.now() - t0) / ms);
+            bgm.el.volume = from + (to - from) * k;
+            if (k >= 1) { clearInterval(bgm.fade); if (done) done(); }
+          }, 40);
+        },
+        // iOS 只允许在点击里首次播放：开场点按钮时先静音播一下再暂停
+        unlock() {
+          if (bgm.wanted) return;
+          bgm.el.volume = 0;
+          const p = bgm.el.play();
+          if (p && p.then) p.then(() => { if (!bgm.wanted) bgm.el.pause(); }).catch(() => {});
+        },
+        play() {
+          bgm.wanted = true;
+          bgm.el.muted = A.muted;
+          try { bgm.el.currentTime = 0; } catch (e) { /* not loaded yet */ }
+          bgm.el.volume = 0;
+          const p = bgm.el.play();
+          if (p && p.catch) p.catch(() => {});
+          bgm.ramp(bgm.VOL, 2500);
+        },
+        stop(now) {
+          bgm.wanted = false;
+          if (now) { clearInterval(bgm.fade); bgm.el.pause(); return; }
+          bgm.ramp(0, 1200, () => { if (!bgm.wanted) bgm.el.pause(); });
+        },
+      };
 
       // ---------- 选礼物页 ----------
       const underNodes = () => Array.from(document.body.children).filter((el) => el !== gc && el !== bd && el.id !== "lightbox" && el.tagName !== "SCRIPT");
@@ -4669,6 +4707,7 @@
         if (outN === 1) { vis(ui.ctrl, false); ui.hint.classList.add("at-bottom"); setHint("每一缕烛光，都会变成一颗星星"); }
         if (outN >= N) {
           phase = "done"; blowing = false;
+          A.ambient(false); bgm.play();
           later(1900, () => {
             heartPulse = 0; A.chime();
             setHint('<span class="bd-whisper">你许的愿望，我都会努力帮你实现</span>');
@@ -4691,7 +4730,7 @@
       const showAll = (names, on) => names.forEach((n) => vis(ui[n], on));
 
       const toCake = () => {
-        clearTimers(); resetFx(); A.ambient(false);
+        clearTimers(); resetFx(); A.ambient(false); bgm.stop(true);
         wishStars = []; heartPulse = -1; dimTarget = 0;
         ui.hint.classList.remove("at-bottom");
         scene = "cake"; phase = "rise"; cakeShow = true; cakeT = 0; cakeAlpha = 1; fadeCake = false; litN = 0; outN = 0; blowAcc = 0; blowPow = 0; blowing = false;
@@ -4704,7 +4743,7 @@
           phase = "lighting";
           const lightOne = () => {
             if (litN >= N) {
-              phase = "wish"; dimTarget = 1; A.hb();
+              phase = "wish"; dimTarget = 1; A.ambient(true);
               setHint('<span class="bd-whisper">闭上眼睛<br />许个愿吧</span>');
               later(4200, () => {
                 phase = "lit";
@@ -4895,7 +4934,6 @@
         scene = "letter"; showAll(["next", "ring"], false); setHint("");
         tpMode = "free"; curText = "";
         TP.forEach((p) => { p.vx += rnd(-420, 420); p.vy += rnd(-300, 300); });
-        A.ambient(true);
         typeIdx = 0; typeFast = false; ptext.textContent = ""; ptext.classList.add("is-typing");
         vis(ui.letter, true);
         later(1100, typeStep);
@@ -5052,12 +5090,12 @@
       ["pointerup", "pointerleave", "pointercancel"].forEach((n) => blowBtn.addEventListener(n, () => { blowing = false; blowBtn.classList.remove("is-hold"); }));
       blowBtn.addEventListener("keydown", (e) => { if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); if (phase === "lit") blowing = true; } });
       blowBtn.addEventListener("keyup", (e) => { if (e.key === " " || e.key === "Enter") blowing = false; });
-      $("bdStart").addEventListener("click", () => { A.init(); A.chime(); toCake(); });
+      $("bdStart").addEventListener("click", () => { A.init(); A.chime(); toCake(); bgm.unlock(); });
       ui.next.addEventListener("click", () => { A.init(); if (nextMode === "photos") toPhotos(); else toLetter(); });
       $("bdAgain").addEventListener("click", () => { A.init(); showAll(["end", "letter", "ring"], false); toCake(); });
       $("bdHome").addEventListener("click", () => location.reload());
       $("bdBack").addEventListener("click", () => location.reload());
-      $("bdSnd").addEventListener("click", () => { A.setMuted(!A.muted); $("bdSnd").textContent = A.muted ? "🔇" : "♪"; });
+      $("bdSnd").addEventListener("click", () => { A.setMuted(!A.muted); bgm.el.muted = A.muted; $("bdSnd").textContent = A.muted ? "🔇" : "♪"; });
 
       function openBd() {
         bd.hidden = false; bdOpen = true;
