@@ -4753,13 +4753,13 @@
             if (i < texts.length - 1) later(2700, () => show(i + 1));
             else later(1800, () => {
               setHint("轻点屏幕放烟花<small>用手指拨动星星</small>");
-              ui.next.textContent = "时光星环 →"; nextMode = "photos"; vis(ui.next, true);
+              ui.next.textContent = "展开生日信 ✉"; nextMode = "letter"; vis(ui.next, true);
             });
           };
           show(0);
         });
       };
-      let nextMode = "photos";
+      let nextMode = "letter";
 
       // ----- 照片星环 -----
       const ringEl = $("bdRing"), ringCap = $("bdRingCap");
@@ -4819,12 +4819,11 @@
       ui.ring.addEventListener("pointercancel", endDrag);
 
       const toPhotos = () => {
-        scene = "photos"; tpMode = "free"; curText = "";
-        TP.forEach((p) => { p.vx += rnd(-420, 420); p.vy += rnd(-300, 300); });
-        showAll(["next"], false); setHint("");
+        scene = "photos";
+        showAll(["next", "letter", "end"], false); setHint("");
         buildRing(); ringVel = 380; vis(ui.ring, true);
-        A.chime(); A.ambient(true);
-        later(5000, () => { ui.next.textContent = "展开生日信 ✉"; nextMode = "letter"; vis(ui.next, true); });
+        A.chime();
+        later(5000, () => vis(ui.end, true));
       };
 
       // ----- 生日信 -----
@@ -4878,7 +4877,7 @@
         launch(W / 2, H * 0.24, "heart");
         later(600, () => launch(W * 0.18, H * 0.3, "heart"));
         later(1000, () => launch(W * 0.82, H * 0.3, "heart"));
-        later(1800, () => vis(ui.end, true));
+        later(1800, () => { ui.next.textContent = "时光星环 →"; nextMode = "photos"; vis(ui.next, true); });
       };
       const typeStep = () => {
         if (scene !== "letter") return;
@@ -4893,7 +4892,10 @@
       };
       paper.addEventListener("pointerdown", () => { typeFast = true; });
       const toLetter = () => {
-        scene = "letter"; showAll(["next", "ring"], false);
+        scene = "letter"; showAll(["next", "ring"], false); setHint("");
+        tpMode = "free"; curText = "";
+        TP.forEach((p) => { p.vx += rnd(-420, 420); p.vy += rnd(-300, 300); });
+        A.ambient(true);
         typeIdx = 0; typeFast = false; ptext.textContent = ""; ptext.classList.add("is-typing");
         vis(ui.letter, true);
         later(1100, typeStep);
