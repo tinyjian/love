@@ -1309,14 +1309,15 @@
       /* ================= 选礼物页 + 生日礼物 ================= */
       .gc, .bd { position: fixed; inset: 0; color: #fff; font-family: var(--card-font); -webkit-tap-highlight-color: transparent; }
       .gc[hidden], .bd[hidden] { display: none !important; }
-      .lightbox { z-index: 300; }
+      .lightbox { z-index: 1100; }
+      body.gc-open > :not(#gc):not(#bd):not(#lightbox):not(script) { visibility: hidden !important; }
       .love-back {
         position: fixed; z-index: 150; top: var(--safe-top); left: max(14px, env(safe-area-inset-left)); font: inherit; font-size: 13px; color: #fff;
         background: #ffffff1c; border: 1px solid #ffffff3a; border-radius: 999px; padding: 8px 15px; cursor: pointer; backdrop-filter: blur(8px); touch-action: manipulation;
       }
       .love-back[hidden] { display: none; }
       .gc {
-        z-index: 200; display: flex; align-items: center; justify-content: center; overflow: auto;
+        z-index: 1000; display: flex; align-items: center; justify-content: center; overflow: auto; overscroll-behavior: contain;
         background: radial-gradient(120% 90% at 50% 0%, #3d1048 0%, #1b0727 55%, #0b0214 100%);
         transition: opacity .65s ease, transform .65s ease, filter .65s ease;
       }
@@ -1338,11 +1339,13 @@
         transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
         box-shadow: 0 20px 60px #0008; transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, opacity .5s ease;
         animation: gc-in .9s cubic-bezier(.2,.8,.2,1) both;
+        -webkit-backface-visibility: hidden; backface-visibility: hidden; -webkit-mask-image: -webkit-radial-gradient(white, black);
       }
       .gc-bday { --c1: #ffd27a; --glow: #ffc65a55; animation-delay: .15s; }
       .gc-card::before {
         content: ""; position: absolute; inset: -60%; z-index: -2;
         background: conic-gradient(from 0deg, transparent 0 62%, var(--c1) 84%, transparent 100%); animation: gc-spin 5s linear infinite;
+        will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden;
       }
       .gc-card::after { content: ""; position: absolute; inset: 1.6px; border-radius: 25px; z-index: -1; background: linear-gradient(160deg, #331044, #1d0a2b); }
       .gc-card:hover, .gc-card:focus-visible { box-shadow: 0 24px 70px #000a, 0 0 54px var(--glow); outline: none; }
@@ -1358,7 +1361,7 @@
       @keyframes gc-bob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
       @media (max-height: 720px) { .gc-ico { font-size: 46px; margin-bottom: 6px; } .gc-card { padding: 22px 18px 18px; } .gc-sub { margin-bottom: 20px; } }
 
-      .bd { z-index: 210; overflow: hidden; opacity: 0; transition: opacity .8s ease; touch-action: none;
+      .bd { z-index: 1010; overflow: hidden; opacity: 0; transition: opacity .8s ease; touch-action: none;
         background: radial-gradient(110% 80% at 50% 105%, #4d1459 0%, #210835 45%, #0a0214 100%); }
       .bd.is-on { opacity: 1; }
       .bd::before, .bd::after { content: ""; position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%; filter: blur(80px); opacity: .28; pointer-events: none; }
@@ -1646,7 +1649,7 @@
         </div>
       </div>
     </section>
-    <script>try{if(sessionStorage.getItem("love:replay")==="1")document.getElementById("gc").hidden=true}catch(e){}</script>
+    <script>try{if(sessionStorage.getItem("love:replay")==="1")document.getElementById("gc").hidden=true}catch(e){}if(!document.getElementById("gc").hidden)document.body.classList.add("gc-open");</script>
 
     <button id="loveBack" class="love-back" type="button" hidden>‹ 选礼物</button>
 
@@ -4353,6 +4356,8 @@
         const stars = Array.from({ length: low ? 60 : 110 }, () => ({ x: Math.random(), y: Math.random(), r: rnd(0.5, 1.7), p: rnd(0, TAU), s: rnd(0.6, 2) }));
         const hearts = Array.from({ length: low ? 10 : 20 }, () => ({ x: Math.random(), y: Math.random(), s: rnd(5, 12), v: rnd(0.025, 0.06), p: rnd(0, TAU), c: Math.random() < 0.5 ? "255,120,170" : "255,214,130" }));
         const size = () => {
+          // 手机地址栏伸缩只改变少量高度，不重建画布，避免清屏闪烁
+          if (w && innerWidth === w && Math.abs(innerHeight - h) < 160) return;
           const d = Math.min(devicePixelRatio || 1, 1.5);
           w = innerWidth; h = innerHeight; c.width = Math.round(w * d); c.height = Math.round(h * d); x.setTransform(d, 0, 0, d, 0, 0);
         };
@@ -4380,6 +4385,7 @@
       })();
       [gcLove, gcBday].forEach((card) => {
         card.addEventListener("pointermove", (e) => {
+          if (e.pointerType !== "mouse") return;
           const r = card.getBoundingClientRect();
           card.style.setProperty("--ry", `${(((e.clientX - r.left) / r.width - 0.5) * 12).toFixed(1)}deg`);
           card.style.setProperty("--rx", `${((0.5 - (e.clientY - r.top) / r.height) * 12).toFixed(1)}deg`);
@@ -4397,6 +4403,7 @@
       else loveBack.hidden = false; // 「再看一遍」直接进入爱心礼物时也提供返回
       gcLove.addEventListener("click", () => {
         setInert(false);
+        document.body.classList.remove("gc-open");
         loveBack.hidden = false;
         pickGift(gcLove, () => { try { holdBtn.focus({ preventScroll: true }); } catch (e) { /* ignore */ } });
       });
